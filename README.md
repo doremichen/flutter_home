@@ -1,16 +1,41 @@
-# my_first_flutter_app
 
-A new Flutter project.
+# Flutter Practice Projects
 
-## Getting Started
+This repository is dedicated to **learning and experimenting with Flutter and Dart**.  
+It contains small apps and exercises to explore different Flutter concepts, UI components, and state management patterns.
 
-This project is a starting point for a Flutter application.
+> **Note:** These projects are for **practice and educational purposes only**. They are **not intended for production use**.
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## ✅ Goals
+- Practice Flutter/Dart fundamentals
+- Experiment with:
+  - **UI Components**: Buttons, ListView, Dialogs, SnackBars (Toast-like notifications)
+  - **State Management**: Provider, MVVM architecture, ChangeNotifier
+  - **Persistence**: SharedPreferences, local database (SQLite/Hive)
+  - **Design Patterns**: Repository, Strategy, Observer
+- Build small apps and games for hands-on experience
+- Document progress for future reference
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 📂 Planned Features
+- **Basic UI**: Buttons, dynamic lists, dialogs
+- **Toast Notifications**: Using `SnackBar` or `fluttertoast`
+- **MVVM Architecture**: ViewModel with `ChangeNotifier`
+- **Persistent Storage**:
+  - SharedPreferences for simple key-value storage
+  - SQLite/Hive for structured data
+- **Mini Games**: Reaction Trainer, Scoreboard, etc.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Flutter
+Follow the official guide: [Flutter Installation](https://docsthis repository
+```bash
+git clone https://github.com/your-username/flutter-practice.git
+cd flutter-practice
+
