@@ -1,10 +1,10 @@
-//
-// main.dart
-// main
-//
-// Created by Adam Chen on 2025/12/10.
-// Copyright © 2025 Abb company. All rights reserved.
-//
+///
+/// main.dart
+/// main
+///
+/// Created by Adam Chen on 2025/12/10.
+/// Copyright © 2025 Abb company. All rights reserved.
+///
 import 'package:design_pattern_demo/views/home_page.dart';
 import 'package:flutter/material.dart';
 
