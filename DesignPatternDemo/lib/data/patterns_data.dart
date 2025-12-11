@@ -8,6 +8,7 @@
 import 'package:design_pattern_demo/demos/singleton/singleton_demo.dart';
 
 import '../demos/abstract_factory/absfactory_demo.dart';
+import '../demos/builder/builder_demo.dart';
 import '../demos/factory_method/factory_demo.dart';
 import '../models/design_pattern.dart';
 
@@ -17,7 +18,7 @@ final List<DesignPattern> patterns = [
 DesignPattern(name: 'Singleton', category: 'Creational', description: _descTBD, widget: const SingletonDemoPage()),
 DesignPattern(name: 'Factory Method', category: 'Creational', description: _descTBD, widget: const FactoryDemoPage()),
 DesignPattern(name: 'Abstract Factory', category: 'Creational', description: _descTBD, widget: const AbstractFactoryDemoPage()),
-DesignPattern(name: 'Builder', category: 'Creational', description: _descTBD),
+DesignPattern(name: 'Builder', category: 'Creational', description: _descTBD, widget: const BuilderDemoPage()),
 DesignPattern(name: 'Prototype', category: 'Creational', description: _descTBD),
 DesignPattern(name: 'Adapter', category: 'Structural', description: _descTBD),
 DesignPattern(name: 'Bridge', category: 'Structural', description: _descTBD),
