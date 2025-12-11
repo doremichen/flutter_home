@@ -58,54 +58,60 @@ class SingletonDemoPage extends StatefulWidget {
 ///
 /// This class manages the UI and interactions for the Singleton demo page.
 class _SingletonDemoPageState extends State<SingletonDemoPage> {
-  // late initialization
   late final AppLogger _logger;
   List<String> _logs = [];
-
 
   @override
   void initState() {
     super.initState();
-    // initialize logger
-    _logger = AppLogger();
+    _logger = AppLogger(); // Singleton instance
     _logs = _logger.messages;
   }
 
   void _addLog() {
     _logger.log('User tapped Log button (hash: ${_logger.hashCode})');
-    // update ui
-    setState(() {
-      _logs = _logger.messages;
-    });
+    setState(() => _logs = _logger.messages);
   }
 
   void _clearLogs() {
     _logger.clear();
-    setState(() {
-      _logs = _logger.messages;
-    });
+    setState(() => _logs = _logger.messages);
   }
 
   void _refresh() {
-    setState(() {
-      _logs = _logger.messages;
-    });
+    setState(() => _logs = _logger.messages);
   }
 
   @override
   Widget build(BuildContext context) {
     final hash = _logger.hashCode;
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Singleton Demo'),
-        ),
-        body: Column(
-          children: [
-            const SizedBox(height: 12),
-            Text('Singleton instance hashCode: $hash',
-                style: const TextStyle(fontSize: 14, color: Colors.grey)),
+    Theme.of(context);
 
+    return Scaffold(
+      appBar: AppBar(title: const Text('Singleton Demo')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            /// --- 新增：Demo 目的說明 ---
+            _InfoBanner(
+              title: '此 Demo 的目的',
+              lines: const [
+                '展示 Singleton 模式如何確保全域僅有一個實例，並在整個應用中共享狀態。',
+                '此範例使用 AppLogger 作為 Singleton，所有操作（新增、清除、刷新）都作用於同一個實例。',
+                '透過 hashCode 可驗證每次操作使用的都是同一個物件。',
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            /// --- 顯示 Singleton hashCode ---
+            Text(
+              'Singleton instance hashCode: $hash',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
             const SizedBox(height: 12),
+
+            /// --- 控制按鈕 ---
             Wrap(
               spacing: 12,
               runSpacing: 8,
@@ -129,28 +135,69 @@ class _SingletonDemoPageState extends State<SingletonDemoPage> {
             ),
 
             const Divider(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Messages:', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+
+            /// --- 標題 ---
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Messages:', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
 
-            // log list
+            /// --- Log 清單 ---
             Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: _logs.length,
-                separatorBuilder: (_, __) => const Divider(height: 12),
-                itemBuilder: (_, index) => Text(_logs[index]),
+              child: Card(
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _logs.length,
+                  separatorBuilder: (_, __) => const Divider(height: 12),
+                  itemBuilder: (_, index) => Text(_logs[index]),
+                ),
               ),
             ),
-
           ],
         ),
+      ),
     );
+  }
+}
 
+/// --- Demo 說明卡元件（與其他頁一致） ---
+class _InfoBanner extends StatelessWidget {
+  final String title;
+  final List<String> lines;
+
+  const _InfoBanner({required this.title, required this.lines});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final titleStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold);
+    final bodyStyle = theme.textTheme.bodyMedium;
+
+    return Card(
+      color: theme.colorScheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (titleStyle != null) Text(title, style: titleStyle),
+            const SizedBox(height: 8),
+            ...lines.map(
+                  (t) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• '),
+                    Expanded(child: Text(t, style: bodyStyle)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
