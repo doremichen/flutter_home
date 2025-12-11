@@ -5,15 +5,16 @@
 /// Created by Adam Chen on 2025/12/10.
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
-import 'package:design_pattern_demo/demos/singleton_demo.dart';
+import 'package:design_pattern_demo/demos/singleton/singleton_demo.dart';
 
+import '../demos/factory_method/factory_demo.dart';
 import '../models/design_pattern.dart';
 
 const _descTBD = 'Demo not implemented yet.';
 
 final List<DesignPattern> patterns = [
 DesignPattern(name: 'Singleton', category: 'Creational', description: _descTBD, widget: const SingletonDemoPage()),
-DesignPattern(name: 'Factory Method', category: 'Creational', description: _descTBD),
+DesignPattern(name: 'Factory Method', category: 'Creational', description: _descTBD, widget: const FactoryDemoPage()),
 DesignPattern(name: 'Abstract Factory', category: 'Creational', description: _descTBD),
 DesignPattern(name: 'Builder', category: 'Creational', description: _descTBD),
 DesignPattern(name: 'Prototype', category: 'Creational', description: _descTBD),
