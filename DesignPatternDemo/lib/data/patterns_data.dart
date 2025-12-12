@@ -7,6 +7,7 @@
 ///
 import 'package:design_pattern_demo/demos/singleton/singleton_demo.dart';
 
+import '../demos/Bridge/bridge_demo.dart';
 import '../demos/abstract_factory/absfactory_demo.dart';
 import '../demos/adapter/adapter_demo.dart';
 import '../demos/builder/builder_demo.dart';
@@ -23,7 +24,7 @@ DesignPattern(name: 'Abstract Factory', category: 'Creational', description: _de
 DesignPattern(name: 'Builder', category: 'Creational', description: _descTBD, widget: const BuilderDemoPage()),
 DesignPattern(name: 'Prototype', category: 'Creational', description: _descTBD, widget: const PrototypeDemoPage()),
 DesignPattern(name: 'Adapter', category: 'Structural', description: _descTBD, widget: const AdapterDemoPage()),
-DesignPattern(name: 'Bridge', category: 'Structural', description: _descTBD),
+DesignPattern(name: 'Bridge', category: 'Structural', description: _descTBD, widget: const BridgeDemoPage()),
 DesignPattern(name: 'Composite', category: 'Structural', description: _descTBD),
 DesignPattern(name: 'Decorator', category: 'Structural', description: _descTBD),
 DesignPattern(name: 'Facade', category: 'Structural', description: _descTBD),
