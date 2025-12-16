@@ -80,208 +80,231 @@ class _PrototypeDemoBodyState extends State<_PrototypeDemoBody> {
           body: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-                children: [
-                  // --- InfoBanner ------------------
-                  _InfoBanner(
-                    title: '此 Demo 的目的',
-                    lines: const [
-                      '展示 Prototype（原型）如何透過既有樣本快速建立新物件，並以「深拷貝」確保新物件與原型相互獨立。',
-                      '上方可選不同車款原型（跑車/家庭/卡車）；可在右側欄位調整顏色、座位與功能，按下「Clone」即產生新車輛。',
-                      '清單會列出所有已建立的克隆，便於比較與驗證拷貝的獨立性（含 features 深拷貝）。',
-                    ],
-                  ),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ================= 上半部：設定 / 說明 =================
+                Expanded(
+                  flex: 2,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // --- InfoBanner ------------------
+                        _InfoBanner(
+                          title: '此 Demo 的目的',
+                          lines: const [
+                            '展示 Prototype（原型）如何透過既有樣本快速建立新物件，並以「深拷貝」確保新物件與原型相互獨立。',
+                            '上方可選不同車款原型（跑車/家庭/卡車）；可在右側欄位調整顏色、座位與功能，按下「Clone」即產生新車輛。',
+                            '清單會列出所有已建立的克隆，便於比較與驗證拷貝的獨立性（含 features 深拷貝）。',
+                          ],
+                        ),
 
-                  const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                  // --- prototype choice -------
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: List.generate( vm.keys.length, (i) {
-                        // selected item
-                        final isSelected = vm.selectedIndex == i;
-                        return ChoiceChip(
-                            label: Text(vm.keys[i]),
-                            selected: isSelected,
-                            onSelected: (v) {
-                              vm.selectPrototype(i);
-                            }
-                        );
-                      }),
-                    ),
-                  ),
+                        // --- prototype choice -------
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: List.generate(vm.keys.length, (i) {
+                            final isSelected = vm.selectedIndex == i;
+                            return ChoiceChip(
+                              label: Text(vm.keys[i]),
+                              selected: isSelected,
+                              onSelected: (_) => vm.selectPrototype(i),
+                            );
+                          }),
+                        ),
 
-                  const SizedBox(height: 12),
+                        const SizedBox(height: 12),
 
-                  // ---- customize field ------
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // left: basic
-                          Expanded(
-                            child: Column(
+                        // ---- customize field ------
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TextField(
-                                  controller: _nameController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Name suffix（可留空）',
-                                    hintText: '例如：X / Limited',
-                                  ),
-                                  onChanged: vm.setNameSuffix,
-                                ),
-                                const SizedBox(height: 12),
-                                TextField(
-                                  controller: _colorController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Color',
-                                    hintText: '例如：Red / Blue / White',
-                                  ),
-                                  onChanged: vm.setColor,
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    const Text('Seats: '),
-                                    Expanded(
-                                      child: Slider(
-                                        value: vm.seats.toDouble(),
-                                        min: 1,
-                                        max: 7,
-                                        divisions: 6,
-                                        label: '${vm.seats}',
-                                        onChanged: (v) => vm.setSeats(v.round()),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-
-                          // right : customization
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Features', style: TextStyle(fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  spacing: 6,
-                                  runSpacing: 6,
-                                  children: List.generate(
-                                    vm.customizationFeatures.length,
-                                        (i) => Chip(
-                                      label: Text(vm.customizationFeatures[i]),
-                                      onDeleted: () => vm.removeFeatureAt(i),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _featureController,
+                                // left
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TextField(
+                                        controller: _nameController,
                                         decoration: const InputDecoration(
-                                          labelText: 'Add new feature',
+                                          labelText: 'Name suffix（可留空）',
+                                        ),
+                                        onChanged: vm.setNameSuffix,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      TextField(
+                                        controller: _colorController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Color',
+                                        ),
+                                        onChanged: vm.setColor,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          const Text('Seats: '),
+                                          Expanded(
+                                            child: Slider(
+                                              value: vm.seats.toDouble(),
+                                              min: 1,
+                                              max: 7,
+                                              divisions: 6,
+                                              label: '${vm.seats}',
+                                              onChanged: (v) =>
+                                                  vm.setSeats(v.round()),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(width: 12),
+
+                                // right
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Features',
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 6,
+                                        runSpacing: 6,
+                                        children: List.generate(
+                                          vm.customizationFeatures.length,
+                                              (i) => Chip(
+                                            label: Text(
+                                                vm.customizationFeatures[i]),
+                                            onDeleted: () =>
+                                                vm.removeFeatureAt(i),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    FilledButton.tonal(
-                                      onPressed: () {
-                                        vm.addFeature(_featureController.text);
-                                        _featureController.clear();
-                                      },
-                                      child: const Text('Add'),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: _featureController,
+                                              decoration:
+                                              const InputDecoration(
+                                                labelText: 'Add new feature',
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          FilledButton.tonal(
+                                            onPressed: () {
+                                              vm.addFeature(
+                                                  _featureController.text);
+                                              _featureController.clear();
+                                            },
+                                            child: const Text('Add'),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // --- Operation buttons -------
+                        Row(
+                          children: [
+                            FilledButton(
+                              onPressed: vm.cloneWithCustomization,
+                              child: const Text('Clone'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilledButton.tonal(
+                              onPressed: vm.resetCustomization,
+                              child: const Text('Reset customization'),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+                ),
 
+                const Divider(height: 32),
+
+                // ================= 下半部：結果清單 =================
+                Expanded(
+                  flex: 3,
+                  child: Card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Text(
+                            'Created clones',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const Divider(height: 1),
+
+                        Expanded(
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: vm.created.length,
+                            separatorBuilder: (_, __) =>
+                            const Divider(height: 12),
+                            itemBuilder: (_, index) {
+                              final v = vm.created[index];
+                              return ListTile(
+                                leading:
+                                CircleAvatar(child: Text('${index + 1}')),
+                                title: Text('${v.model} (${v.type})'),
+                                subtitle: Text(
+                                  'Color: ${v.specs.color}, Seats: ${v.specs.seats}\n'
+                                      'Features: ${v.specs.features.join(", ")}',
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ================= Logs =================
+                if (vm.logs.isNotEmpty) ...[
                   const SizedBox(height: 12),
-
-                  // --- Operation buttons -------
-                  Row(
-                    children: [
-                      FilledButton(
-                        onPressed: vm.cloneWithCustomization,
-                        child: const Text('Clone'),
-                      ),
-                      const SizedBox(width: 8),
-                      FilledButton.tonal(
-                        onPressed: vm.resetCustomization,
-                        child: const Text('Reset customization'),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // --- Title -----
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Created clones:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-
-                  // --- Result list --------------
-                  Expanded(
+                  SizedBox(
+                    height: 160,
                     child: Card(
                       child: ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: vm.created.length,
-                        separatorBuilder: (_, __) => const Divider(height: 12),
-                        itemBuilder: (_, index) {
-                          final v = vm.created[index];
-                          return ListTile(
-                            leading: CircleAvatar(child: Text('${index + 1}')),
-                            title: Text('${v.model}  (${v.type})'),
-                            subtitle: Text(
-                              'Color: ${v.specs.color}, Seats: ${v.specs.seats}\n'
-                                  'Features: ${v.specs.features.join(", ")}',
-                            ),
-                          );
-                        },
+                        padding: const EdgeInsets.all(12),
+                        itemCount: vm.logs.length,
+                        separatorBuilder: (_, __) =>
+                        const Divider(height: 8),
+                        itemBuilder: (_, i) => Text(vm.logs[i]),
                       ),
                     ),
                   ),
-
-                  // --- Log list --------------
-                  if (vm.logs.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    SizedBox(
-                      height: 120,
-                      child: Card(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: vm.logs.length,
-                          separatorBuilder: (_, __) => const Divider(height: 8),
-                          itemBuilder: (_, i) => Text(vm.logs[i]),
-                        ),
-                      ),
-                    ),
-                  ],
-
                 ],
+              ],
             ),
           ),
+
         );
       }
     );
