@@ -57,8 +57,8 @@ class _BridgeDemoBody extends StatelessWidget {
                     _InfoBanner(
                       title: '此 Demo 的目的',
                       lines: const [
-                        '展示 Bridge 模式：將「抽象（遙控器）」與「實作（裝置）」分離並以組合相連，使兩者可獨立演進。',
-                        '左側選擇裝置（TV/Radio/SmartLight），右側選擇遙控器（Basic/Advanced）。操作按鈕會透過 Bridge 呼叫裝置行為。',
+                        '展示 bridge 模式：將「抽象（遙控器）」與「實作（裝置）」分離並以組合相連，使兩者可獨立演進。',
+                        '左側選擇裝置（TV/Radio/SmartLight），右側選擇遙控器（Basic/Advanced）。操作按鈕會透過 bridge 呼叫裝置行為。',
                         '觀察狀態卡與下方 Log：更換遙控器不需改動裝置；新增裝置不需改動遙控器，達到低耦合可擴充的設計。',
                       ],
                     ),
