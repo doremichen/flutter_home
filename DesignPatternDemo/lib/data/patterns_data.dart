@@ -12,6 +12,7 @@ import '../demos/abstract_factory/absfactory_demo.dart';
 import '../demos/adapter/adapter_demo.dart';
 import '../demos/builder/builder_demo.dart';
 import '../demos/composite/composite_demo.dart';
+import '../demos/decorator/decorator_demo.dart';
 import '../demos/factory_method/factory_demo.dart';
 import '../demos/prototype/prototype_demo.dart';
 import '../models/design_pattern.dart';
@@ -27,7 +28,7 @@ DesignPattern(name: 'Prototype', category: 'Creational', description: _descTBD, 
 DesignPattern(name: 'Adapter', category: 'Structural', description: _descTBD, widget: const AdapterDemoPage()),
 DesignPattern(name: 'Bridge', category: 'Structural', description: _descTBD, widget: const BridgeDemoPage()),
 DesignPattern(name: 'Composite', category: 'Structural', description: _descTBD, widget: const CompositeDemoPage()),
-DesignPattern(name: 'Decorator', category: 'Structural', description: _descTBD),
+DesignPattern(name: 'Decorator', category: 'Structural', description: _descTBD, widget: const DecoratorDemoPage()),
 DesignPattern(name: 'Facade', category: 'Structural', description: _descTBD),
 DesignPattern(name: 'Flyweight', category: 'Structural', description: _descTBD),
 DesignPattern(name: 'Proxy', category: 'Structural', description: _descTBD),
