@@ -37,6 +37,14 @@ class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
   final _keyController = TextEditingController(text: 'article-100');
 
   @override
+  void dispose() {
+    // dispose
+    _keyController.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<ProxyViewModel>(
       builder: (context, vm, _) {
