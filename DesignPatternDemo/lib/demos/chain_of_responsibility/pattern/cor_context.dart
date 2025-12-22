@@ -29,12 +29,6 @@ class ChainBuilder {
       if (withTier1) Tier1Handler(logStr: logStr),
       if (withTier2) Tier2Handler(logStr: logStr),
       if (withManager) ManagerHandler(logStr: logStr),
-      // if (withAuth) AuthHandler(logStr: logStr),
-      // if (withSpam) SpamHandler(logStr: logStr),
-      // if (withValidation) ValidationHandler(logStr: logStr),
-      // if (withTier1) Tier1Handler(logStr: logStr),
-      // if (withTier2) Tier2Handler(logStr: logStr),
-      // if (withManager) ManagerHandler(logStr: logStr),
     ];
 
     // 2. active handlers check
