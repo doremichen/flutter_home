@@ -8,6 +8,7 @@
 import 'package:design_pattern_demo/demos/singleton/singleton_demo.dart';
 
 import '../demos/Bridge/bridge_demo.dart';
+import '../demos/Interpreter/interpreter_demo.dart';
 import '../demos/abstract_factory/absfactory_demo.dart';
 import '../demos/adapter/adapter_demo.dart';
 import '../demos/builder/builder_demo.dart';
@@ -39,7 +40,7 @@ DesignPattern(name: 'Flyweight', category: 'Structural', description: _descTBD, 
 DesignPattern(name: 'Proxy', category: 'Structural', description: _descTBD, widget: const ProxyDemoPage()),
 DesignPattern(name: 'Chain of Responsibility', category: 'Behavioral', description: _descTBD, widget: const CoRDemoPage()),
 DesignPattern(name: 'Command', category: 'Behavioral', description: _descTBD, widget: const CommandDemoPage()),
-DesignPattern(name: 'Interpreter', category: 'Behavioral', description: _descTBD),
+DesignPattern(name: 'Interpreter', category: 'Behavioral', description: _descTBD, widget: const InterpreterDemoPage()),
 DesignPattern(name: 'Iterator', category: 'Behavioral', description: _descTBD),
 DesignPattern(name: 'Mediator', category: 'Behavioral', description: _descTBD),
 DesignPattern(name: 'Memento', category: 'Behavioral', description: _descTBD),
