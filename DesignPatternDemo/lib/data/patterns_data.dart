@@ -22,6 +22,7 @@ import '../demos/flyweight/flyweight_demo.dart';
 import '../demos/iterator/iterator_demo.dart';
 import '../demos/mediator/mediator_demo.dart';
 import '../demos/memento/memento_demo.dart';
+import '../demos/observer/observer_demo.dart';
 import '../demos/prototype/prototype_demo.dart';
 import '../demos/proxy/proxy_demo.dart';
 import '../models/design_pattern.dart';
@@ -47,7 +48,7 @@ DesignPattern(name: 'Interpreter', category: 'Behavioral', description: _descTBD
 DesignPattern(name: 'Iterator', category: 'Behavioral', description: _descTBD, widget: const IteratorDemoPage()),
 DesignPattern(name: 'Mediator', category: 'Behavioral', description: _descTBD, widget: const MediatorDemoPage()),
 DesignPattern(name: 'Memento', category: 'Behavioral', description: _descTBD, widget: const MementoDemoPage()),
-DesignPattern(name: 'Observer', category: 'Behavioral', description: _descTBD),
+DesignPattern(name: 'Observer', category: 'Behavioral', description: _descTBD, widget: const ObserverDemoPage()),
 DesignPattern(name: 'State', category: 'Behavioral', description: _descTBD),
 DesignPattern(name: 'Strategy', category: 'Behavioral', description: _descTBD),
 DesignPattern(name: 'Template Method', category: 'Behavioral', description: _descTBD),
