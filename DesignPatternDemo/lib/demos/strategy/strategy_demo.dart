@@ -1,41 +1,34 @@
-///
-/// state_demo.dart
-/// StateDemoPage
-///
-/// Created by Adam Chen on 2025/12/26
-/// Copyright © 2025 Abb company. All rights reserved
-///
-import '../state/widgets/control_panel.dart';
-import '../state/widgets/info_banner.dart';
-import '../state/widgets/log_list.dart';
-import 'package:flutter/material.dart';
+
+import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
 
-import 'view_model/player_view_model.dart';
+import 'view_model/sort_view_model.dart';
+import 'widgets/info_banner.dart';
+import 'widgets/control_panel.dart';
+import 'widgets/log_list.dart';
 
 
-class StateDemoPage extends StatelessWidget {
+class StrategyDemoPage extends StatelessWidget {
 
-  const StateDemoPage({super.key});
+  const StrategyDemoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => PlayerViewModel(),
-      child: const _StateDemoBody(),
+      create: (_) => SortViewModel(),
+      child: const _StrategyDemoBody(),
     );
   }
 
 }
 
-class _StateDemoBody extends StatelessWidget {
-  const _StateDemoBody();
+class _StrategyDemoBody extends StatelessWidget {
+  const _StrategyDemoBody();
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<PlayerViewModel>(
+    return Consumer<SortViewModel>(
       builder: (context, vm, _) {
-
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final msg = vm.lastToast;
           if (msg != null) {
@@ -47,7 +40,7 @@ class _StateDemoBody extends StatelessWidget {
         });
 
         return Scaffold(
-          appBar: AppBar(title: const Text('State Pattern Demo (MVVM)')),
+          appBar: AppBar(title: const Text('Strategy Pattern Demo (MVVM)')),
           body: const Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

@@ -59,6 +59,7 @@ class PlayerViewModel extends ChangeNotifier {
     }
     _selectedType = type;
     _log('切換 State Engine：${_engineName(type)}');
+    lastToast = '切換 State Engine：${_engineName(type)}';
     notifyListeners();
   }
 
@@ -78,6 +79,7 @@ class PlayerViewModel extends ChangeNotifier {
     _engine?.play();
     lastToast = 'Play';
     _log('Play');
+    lastToast = 'Play';
     notifyListeners();
   }
 
@@ -85,6 +87,7 @@ class PlayerViewModel extends ChangeNotifier {
     _engine?.pause();
     lastToast = 'Pause';
     _log('Pause');
+    lastToast = 'Pause';
     notifyListeners();
   }
 
@@ -92,6 +95,7 @@ class PlayerViewModel extends ChangeNotifier {
     _engine?.stop();
     lastToast = 'Stop';
     _log('Stop');
+    lastToast = 'Stop';
     notifyListeners();
   }
 
@@ -99,6 +103,7 @@ class PlayerViewModel extends ChangeNotifier {
     _engine?.reset();
     lastToast = 'Reset';
     _log('Reset');
+    lastToast = 'Reset';
     notifyListeners();
   }
 
@@ -112,6 +117,7 @@ class PlayerViewModel extends ChangeNotifier {
   void clearLogs() {
     _logs.clear();
     lastToast = 'Logs cleared';
+    _log('Logs cleared');
     notifyListeners();
   }
 
