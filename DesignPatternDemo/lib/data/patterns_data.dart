@@ -27,6 +27,7 @@ import '../demos/prototype/prototype_demo.dart';
 import '../demos/proxy/proxy_demo.dart';
 import '../demos/state/state_demo.dart';
 import '../demos/strategy/strategy_demo.dart';
+import '../demos/template/template_demo.dart';
 import '../models/design_pattern.dart';
 
 const _descTBD = 'Demo not implemented yet.';
@@ -53,6 +54,6 @@ DesignPattern(name: 'Memento', category: 'Behavioral', description: _descTBD, wi
 DesignPattern(name: 'Observer', category: 'Behavioral', description: _descTBD, widget: const ObserverDemoPage()),
 DesignPattern(name: 'State', category: 'Behavioral', description: _descTBD, widget: const StateDemoPage()),
 DesignPattern(name: 'Strategy', category: 'Behavioral', description: _descTBD, widget: const StrategyDemoPage()),
-DesignPattern(name: 'Template Method', category: 'Behavioral', description: _descTBD),
+DesignPattern(name: 'Template Method', category: 'Behavioral', description: _descTBD, widget: const TemplateDemoPage()),
 DesignPattern(name: 'Visitor', category: 'Behavioral', description: _descTBD),
 ];
