@@ -51,25 +51,25 @@ class _FactoryDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Factory Method Demo'),
+            title: const Text('工廠方法模式展示'),
             actions: [
               IconButton(
-                tooltip: 'Clear all',
+                tooltip: '全部清除',
                 icon: const Icon(Icons.delete),
                 onPressed: () async {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: const Text('Clear all'),
-                      content: const Text('Remove all created vehicles?'),
+                      title: const Text('全部清除'),
+                      content: const Text('移除所有已建立的車輛?'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text('Cancel'),
+                          child: const Text('取消'),
                         ),
                         ElevatedButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('Confirm'),
+                          child: const Text('確認'),
                         ),
                       ],
                     ),
@@ -79,76 +79,130 @@ class _FactoryDemoBody extends StatelessWidget {
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                /// --- 新增：Demo 目的說明（位於 AppBar 下方） ---
-                _InfoBanner(
-                  title: '此 Demo 的目的',
-                  lines: const [
-                    '示範 Factory Method 如何將「物件的建立邏輯」封裝在各個 Creator/ConcreteFactory 中，而呼叫端僅透過抽象工廠介面取得具體產品。',
-                    '下方按鈕可建立不同車款（跑車/家庭轎車/卡車），每個工廠負責回傳各自的 Vehicle 實例。',
-                    '右下方清單會顯示已建立的車輛與描述，便於比較不同工廠的差異與擴充性。',
-                  ],
-                ),
-                const SizedBox(height: 16),
+          extendBody: false,
+          body: SafeArea(
+            child: Padding(
+              // 側邊與頂部留白
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  /// --- 上半部：Demo 目的說明 (保持置頂) ---
+                  _buildHeaderSection(),
 
-                /// --- 控制區：建立 Vehicle 的按鈕群 ---
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    children: factories
-                        .map(
-                          (f) => ElevatedButton.icon(
-                        onPressed: () => vm.createVehicle(f),
-                        icon: const Icon(Icons.factory),
-                        label: Text(f.label),
-                      ),
-                    )
-                        .toList(),
-                  ),
-                ),
+                  const Divider(height: 24, thickness: 1),
 
-                const Divider(height: 24),
+                  /// --- 下半部：左按鈕 / 右清單 (並排區) ---
+                  Expanded(
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 【左側：按鈕區】
+                          // 使用 SizedBox 或指定寬度，避免與右側清單擠壓
+                          _buildFactoryButtonList(factories, vm),
 
-                /// --- 清單標題 ---
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Created vehicles:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                          const VerticalDivider(width: 24, thickness: 1),
+
+                          // 【右側：結果清單】
+                          // 使用 Expanded 佔滿剩餘的所有右側空間
+                          Expanded(
+                            child: _buildResultList(vm),
+                          ),
+                        ],
                     ),
                   ),
-                ),
-
-                /// --- 結果清單 ---
-                Expanded(
-                  child: Card(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: vm.created.length,
-                      separatorBuilder: (_, __) => const Divider(height: 12),
-                      itemBuilder: (_, index) {
-                        final v = vm.created[index];
-                        return ListTile(
-                          leading: CircleAvatar(child: Text('${index + 1}')),
-                          title: Text(v.name),
-                          subtitle: Text(v.describe()),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHeaderSection() {
+    return _InfoBanner(
+      title: '此 Demo 的目的',
+      lines: const [
+        '示範 Factory Method 如何將建立邏輯封裝在工廠中。',
+        '呼叫端透過抽象介面取得具體產品。',
+        '下方按鈕可建立不同車款，便於觀察擴充性。',
+      ],
+    );
+  }
+
+
+  Widget _buildFactoryButtonList(List factories, dynamic vm) {
+    return SizedBox(
+        width: 140, // 根據按鈕文字長度調整寬度
+        child: SingleChildScrollView(
+          child: Column(
+            children: factories.map((f) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildSingleFactoryButton(f, vm), // 這裡建議按鈕寬度設為 double.infinity
+            )).toList(),
+          ),
+        )
+    );
+  }
+
+  Widget _buildResultList(dynamic vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('已建立車輛:', style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: vm.created.isEmpty
+                  ? const Center(child: Text('無資料', style: TextStyle(fontSize: 12)))
+                  : ListView.separated(
+                padding: const EdgeInsets.all(8),
+                itemCount: vm.created.length,
+                separatorBuilder: (_, __) => const Divider(height: 8),
+                itemBuilder: (_, index) {
+                  final v = vm.created[index];
+                  // 右側空間有限，ListTile 需簡化
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                    title: Text(v.name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    subtitle: Text(v.describe(), style: const TextStyle(fontSize: 11)),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildSingleFactoryButton(VehicleFactory factory, dynamic vm) {
+    return SizedBox(
+      width: double.infinity, // 填滿左側 140 寬度
+      child: ElevatedButton.icon(
+        onPressed: () => vm.createVehicle(factory),
+        icon: const Icon(Icons.add, size: 16),
+        label: Text(
+          factory.label,
+          style: const TextStyle(fontSize: 11),
+          textAlign: TextAlign.start,
+        ),
+        style: ElevatedButton.styleFrom(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 0,
+        ),
+      ),
     );
   }
 }

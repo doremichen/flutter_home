@@ -20,29 +20,29 @@ abstract class Vehicle {
 
 class SportCar implements Vehicle {
   @override
-  String get name => 'Sport Car';
+  String get name => '跑車';
 
   @override
   int get wheels => 4;
   @override
-  String describe() => '$name — $wheels wheels, high-performance, 2 seats';
+  String describe() => '$name — $wheels 車輪、高性能、雙座';
 }
 
 class FamilyCar implements Vehicle {
   @override
-  String get name => 'Family Car';
+  String get name => '房車';
   @override
   int get wheels => 4;
 
   @override
-  String describe() => '$name — $wheels wheels, comfort & safety, 5 seats';
+  String describe() => '$name — $wheels 車輪、舒適性和安全性、5個座位';
 }
 
 class Truck implements Vehicle {
   @override
-  String get name => 'Truck';
+  String get name => '卡車';
   @override
   int get wheels => 6;
   @override
-  String describe() => '$name — $wheels wheels, heavy-duty cargo';
+  String describe() => '$name — $wheels 輪子，重型貨物';
 }

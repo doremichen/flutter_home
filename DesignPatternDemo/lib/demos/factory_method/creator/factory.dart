@@ -20,21 +20,21 @@ abstract class VehicleFactory {
 
 class SportCarFactory implements VehicleFactory {
     @override
-    String get label => 'Create Sport Car';
+    String get label => '打造跑車';
     @override
     Vehicle create() => SportCar();
 }
 
 class FamilyCarFactory implements VehicleFactory {
     @override
-    String get label => 'Create Family Car';
+    String get label => '創建家庭用車';
     @override
     Vehicle create() => FamilyCar();
 }
 
 class TruckFactory implements VehicleFactory {
     @override
-    String get label => 'Create Truck';
+    String get label => '創建卡車';
     @override
     Vehicle create() => Truck();
 }
