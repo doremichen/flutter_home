@@ -23,30 +23,30 @@ abstract class Tire {
 
 class SportEngine implements Engine {
   @override
-  String spec() => 'SportEngine: twin-turbo, high RPM';
+  String spec() => '運動型引擎：雙渦輪增壓，高轉速';
 }
 
 class SportTire implements Tire {
   @override
-  String spec() => 'SportTire: soft compound, high grip';
+  String spec() => '運動胎：軟質配方，高抓地力';
 }
 
 class FamilyEngine implements Engine {
   @override
-  String spec() => 'FamilyEngine: fuel efficient, quiet';
+  String spec() => '房車引擎: 燃油效率高，噪音低';
 }
 
 class FamilyTire implements Tire {
   @override
-  String spec() => 'FamilyTire: comfort-oriented, long-lasting';
+  String spec() => '房車胎：舒適耐用';
 }
 
 class TruckEngine implements Engine {
   @override
-  String spec() => 'TruckEngine: high torque, diesel';
+  String spec() => '卡車引擎：高扭力柴油發動機';
 }
 
 class TruckTire implements Tire {
   @override
-  String spec() => 'TruckTire: reinforced sidewall, heavy load';
+  String spec() => '卡車輪胎：加強型胎側，重載';
 }

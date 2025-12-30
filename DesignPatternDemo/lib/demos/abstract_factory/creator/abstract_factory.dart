@@ -21,7 +21,7 @@ abstract class VehiclePartsFactory {
 /// =======================
 class SportPartsFactory implements VehiclePartsFactory {
   @override
-  String get label => 'Sport Family';
+  String get label => '跑車家族';
   @override
   Engine createEngine() => SportEngine();
   @override
@@ -30,7 +30,7 @@ class SportPartsFactory implements VehiclePartsFactory {
 
 class FamilyPartsFactory implements VehiclePartsFactory {
   @override
-  String get label => 'Family Family';
+  String get label => '房車家族';
   @override
   Engine createEngine() => FamilyEngine();
   @override
@@ -39,7 +39,7 @@ class FamilyPartsFactory implements VehiclePartsFactory {
 
 class TruckPartsFactory implements VehiclePartsFactory {
   @override
-  String get label => 'Truck Family';
+  String get label => '卡車家族';
   @override
   Engine createEngine() => TruckEngine();
   @override
