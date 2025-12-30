@@ -8,7 +8,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'view_model/PrototypeViewModel.dart';
+import 'prototype_gallery_page.dart';
+import 'view_model/prototype_view_model.dart';
+import 'util/color_parser.dart';
 
 class PrototypeDemoPage extends StatelessWidget {
 
@@ -32,18 +34,47 @@ class _PrototypeDemoBody extends StatefulWidget {
 }
 
 class _PrototypeDemoBodyState extends State<_PrototypeDemoBody> {
-  final _nameController = TextEditingController();
-  final _featureController = TextEditingController();
-  final _colorController = TextEditingController();
+  late final _nameController;
+  late final _featureController;
+  late final _colorController;
+
+
+  @override
+  void initState() {
+    super.initState();
+    final vm = Provider.of<PrototypeViewModel>(context, listen: false);
+
+    // 初始化控制器，並設定初始值
+    _nameController = TextEditingController(text: vm.nameSuffix);
+    _colorController = TextEditingController(text: vm.color);
+    _featureController = TextEditingController();
+
+    // 監聽 ViewModel，處理由上而下的數據同步（如：切換原型或重置）
+    vm.addListener(_onViewModelChanged);
+  }
 
 
   @override
   void dispose() {
+    final vm = Provider.of<PrototypeViewModel>(context, listen: false);
+    vm.removeListener(_onViewModelChanged);
     //
     _nameController.dispose();
     _featureController.dispose();
     _colorController.dispose();
     super.dispose();
+  }
+
+  void _onViewModelChanged() {
+    final vm = Provider.of<PrototypeViewModel>(context, listen: false);
+
+    // 關鍵：只有在值真正不同時才更新控制器，避免游標跳動或紅屏
+    if (_nameController.text != vm.nameSuffix) {
+      _nameController.text = vm.nameSuffix;
+    }
+    if (_colorController.text != vm.color) {
+      _colorController.text = vm.color;
+    }
   }
 
   @override
@@ -60,255 +91,358 @@ class _PrototypeDemoBodyState extends State<_PrototypeDemoBody> {
           }
         });
 
-        // synchronize input controller
-        _nameController.value = _nameController.value.copyWith(text: vm.nameSuffix);
-        _colorController.value = _colorController.value.copyWith(text: vm.color);
         // theme
         Theme.of(context);
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Prototype Demo'),
+            title: const Text('Prototype 工廠'),
             actions: [
+              // 跳轉到結果頁的按鈕，帶有 Badge 顯示數量
               IconButton(
-                icon: const Icon(Icons.delete),
-                tooltip: 'Clear all',
-                onPressed: vm.clearAll,
+                icon: Badge(
+                  label: Text('${vm.created.length}'),
+                  child: const Icon(Icons.directions_car_filled),
+                ),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => PrototypeGalleryPage(vm: vm))),
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ================= 上半部：設定 / 說明 =================
-                Expanded(
-                  flex: 2,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // --- InfoBanner ------------------
-                        _InfoBanner(
-                          title: '此 Demo 的目的',
-                          lines: const [
-                            '展示 Prototype（原型）如何透過既有樣本快速建立新物件，並以「深拷貝」確保新物件與原型相互獨立。',
-                            '上方可選不同車款原型（跑車/家庭/卡車）；可在右側欄位調整顏色、座位與功能，按下「Clone」即產生新車輛。',
-                            '清單會列出所有已建立的克隆，便於比較與驗證拷貝的獨立性（含 features 深拷貝）。',
-                          ],
-                        ),
+          body: SafeArea(
+            child: Material(
+              color: Colors.transparent,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // --- info banner ---
+                      _buildInfoBanner(),
 
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                        // --- prototype choice -------
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: List.generate(vm.keys.length, (i) {
-                            final isSelected = vm.selectedIndex == i;
-                            return ChoiceChip(
-                              label: Text(vm.keys[i]),
-                              selected: isSelected,
-                              onSelected: (_) => vm.selectPrototype(i),
-                            );
-                          }),
-                        ),
+                      // 2. 當前配置預覽 (移至此處，並改為較緊湊的樣式)
+                      _buildCompactPreview(vm),
 
-                        const SizedBox(height: 12),
+                      const Divider(height: 32, thickness: 1, color: Colors.black12),
 
-                        // ---- customize field ------
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // left
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      TextField(
-                                        controller: _nameController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Name suffix（可留空）',
-                                        ),
-                                        onChanged: vm.setNameSuffix,
-                                      ),
-                                      const SizedBox(height: 12),
-                                      TextField(
-                                        controller: _colorController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Color',
-                                        ),
-                                        onChanged: vm.setColor,
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          const Text('Seats: '),
-                                          Expanded(
-                                            child: Slider(
-                                              value: vm.seats.toDouble(),
-                                              min: 1,
-                                              max: 7,
-                                              divisions: 6,
-                                              label: '${vm.seats}',
-                                              onChanged: (v) =>
-                                                  vm.setSeats(v.round()),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(width: 12),
-
-                                // right
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Features',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                        spacing: 6,
-                                        runSpacing: 6,
-                                        children: List.generate(
-                                          vm.customizationFeatures.length,
-                                              (i) => Chip(
-                                            label: Text(
-                                                vm.customizationFeatures[i]),
-                                            onDeleted: () =>
-                                                vm.removeFeatureAt(i),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextField(
-                                              controller: _featureController,
-                                              decoration:
-                                              const InputDecoration(
-                                                labelText: 'Add new feature',
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          FilledButton.tonal(
-                                            onPressed: () {
-                                              vm.addFeature(
-                                                  _featureController.text);
-                                              _featureController.clear();
-                                            },
-                                            child: const Text('Add'),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // --- Operation buttons -------
-                        Row(
-                          children: [
-                            FilledButton(
-                              onPressed: vm.cloneWithCustomization,
-                              child: const Text('Clone'),
-                            ),
-                            const SizedBox(width: 8),
-                            FilledButton.tonal(
-                              onPressed: vm.resetCustomization,
-                              child: const Text('Reset customization'),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const Divider(height: 32),
-
-                // ================= 下半部：結果清單 =================
-                Expanded(
-                  flex: 3,
-                  child: Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Text(
-                            'Created clones',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const Divider(height: 1),
-
-                        Expanded(
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: vm.created.length,
-                            separatorBuilder: (_, __) =>
-                            const Divider(height: 12),
-                            itemBuilder: (_, index) {
-                              final v = vm.created[index];
-                              return ListTile(
-                                leading:
-                                CircleAvatar(child: Text('${index + 1}')),
-                                title: Text('${v.model} (${v.type})'),
-                                subtitle: Text(
-                                  'Color: ${v.specs.color}, Seats: ${v.specs.seats}\n'
-                                      'Features: ${v.specs.features.join(", ")}',
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // ================= Logs =================
-                if (vm.logs.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 160,
-                    child: Card(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: vm.logs.length,
-                        separatorBuilder: (_, __) =>
-                        const Divider(height: 8),
-                        itemBuilder: (_, i) => Text(vm.logs[i]),
+                      Expanded(
+                        child: _buildControlPanel(vm),
                       ),
-                    ),
-                  ),
-                ],
-              ],
+                    ],
+                ),
+              ),
             ),
           ),
-
         );
       }
     );
   }
+
+  Widget _buildInfoBanner() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 140),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(right: 8),
+            child: _InfoBanner(
+              title: '此 Demo 的目的',
+              lines: const [
+                '展示 Prototype（原型）如何透過既有樣本快速建立新物件，並以「深拷貝」確保新物件與原型相互獨立。',
+                '可選不同車款原型（跑車/家庭/卡車）；可在右側欄位調整顏色、座位與功能，按下「複製」即產生新車輛。',
+                '清單會列出所有已建立的克隆，便於比較與驗證拷貝的獨立性（含 特徵 深拷貝）。',
+              ],
+            ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLivePreview(dynamic vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('當前配置預覽', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        const SizedBox(height: 12),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.deepPurple.shade100, width: 2),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.directions_car, size: 64, color: vm.color.toColor()),
+                  const SizedBox(height: 16),
+                  Text(
+                    vm.selectedPrototypeName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Suffix: ${vm.nameSuffix.isEmpty ? "無" : vm.nameSuffix}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const Divider(height: 24),
+                  _buildPreviewRow('顏色', vm.color),
+                  _buildPreviewRow('座位', '${vm.seats} 人座'),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                   width: double.infinity,
+                   child: Wrap(
+                     spacing: 4,
+                     runSpacing: 4,
+                     children: vm.customizationFeatures.map<Widget>((f) {
+                       return Chip(
+                         label: Text(f, style: const TextStyle(fontSize: 10)),
+                         visualDensity: VisualDensity.compact,
+                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                       );
+                     }).toList(),
+                   ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const Spacer(),
+        // 底部 Log 簡略版
+        if (vm.logs.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              '最後動作: ${vm.logs.last}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPreviewRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          // 標籤部分：使用固定寬度或 Expanded 確保對齊
+          SizedBox(
+            width: 60,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+
+          const Text('：', style: TextStyle(color: Colors.grey)),
+
+          // 數值部分
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              overflow: TextOverflow.ellipsis, // 避免長文字爆掉
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlPanel(dynamic vm) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('1. 選擇原型', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: List.generate(vm.keys.length, (i) {
+              return ChoiceChip(
+                label: Text(vm.keys[i]),
+                selected: vm.selectedIndex == i,
+                onSelected: (_) => vm.selectPrototype(i),
+              );
+            }),
+          ),
+
+          const SizedBox(height: 24),
+          const Text('2. 調整屬性', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+          const SizedBox(height: 12),
+
+          _buildAttributeCard(vm),
+
+          const SizedBox(height: 24),
+
+          // 按鈕改為並排或大按鈕
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: ElevatedButton.icon(
+                  onPressed: vm.cloneWithCustomization,
+                  icon: const Icon(Icons.copy_all),
+                  label: const Text('執行克隆 (Clone)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 1,
+                child: OutlinedButton(
+                  onPressed: vm.resetCustomization,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: const BorderSide(color: Colors.deepPurple),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('重置'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttributeCard(dynamic vm) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        children: [
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: '名稱後綴 (Suffix)', isDense: true),
+            onChanged: vm.setNameSuffix,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _colorController,
+            decoration: const InputDecoration(labelText: '顏色 (Color)', isDense: true),
+            onChanged: vm.setColor,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _featureController,
+                  decoration: const InputDecoration(labelText: '新增特徵 (Feature)', isDense: true),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add_circle, color: Colors.deepPurple),
+                onPressed: () {
+                  if (_featureController.text.isNotEmpty) {
+                    vm.addFeature(_featureController.text);
+                    _featureController.clear(); // 僅在手動添加後清空
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('座位:', style: TextStyle(fontSize: 12)),
+              Text('${vm.seats}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+          Slider(
+            value: vm.seats.toDouble(),
+            min: 1, max: 7, divisions: 6,
+            onChanged: (v) => vm.setSeats(v.round()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactPreview(dynamic vm) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.deepPurple.shade100, width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+        ],
+      ),
+      child: Row(
+        children: [
+          // 左側：圖示與名稱
+          Icon(Icons.directions_car, size: 48, color: (vm.color as String).toColor()),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  vm.selectedPrototypeName,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '後綴: ${vm.nameSuffix.isEmpty ? "無" : vm.nameSuffix}',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          const VerticalDivider(width: 20),
+          // 右側：參數簡覽
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildPreviewRowInline('顏色', vm.color),
+              _buildPreviewRowInline('座位', '${vm.seats}'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewRowInline(String label, String value) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('$label: ', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        Text(value, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
 }
 
 class _InfoBanner extends StatelessWidget {
