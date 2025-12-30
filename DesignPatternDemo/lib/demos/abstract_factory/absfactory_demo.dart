@@ -130,8 +130,8 @@ class _AbstractFactoryDemoBody extends StatelessWidget {
             title: '此 Demo 的目的',
             lines: const [
               '展示 Abstract Factory 如何產生「一組相互匹配的產品族」，以維持風格與相容性的一致。',
-              '上方的 ChoiceChip 用來選擇不同零件工廠（跑車/家庭/卡車），建立時會一次產生同系列的零件組合。',
-              '下方清單列出已建立的零件套件，便於比較不同工廠的輸出差異與擴充性。',
+              '左方的 ChoiceChip 用來選擇不同零件工廠（跑車/家庭/卡車），建立時會一次產生同系列的零件組合。',
+              '右方清單列出已建立的零件套件，便於比較不同工廠的輸出差異與擴充性。',
             ],
           ),
         ),
@@ -196,7 +196,7 @@ class _AbstractFactoryDemoBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Created sets:', style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text('結果:', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Expanded(
           child: Padding(
