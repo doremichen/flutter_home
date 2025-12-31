@@ -1,8 +1,14 @@
-
-
+///
+/// bridge_demo.dart
+/// BridgeDemoPage
+///
+/// Created by Adam Chen on 2025/12/12.
+/// Copyright © 2025 Abb company. All rights reserved.
+///
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'bridge_log_page.dart';
 import 'view_model/bridge_view_model.dart';
 
 class BridgeDemoPage extends StatelessWidget {
@@ -42,134 +48,199 @@ class _BridgeDemoBody extends StatelessWidget {
               appBar: AppBar(
                 title: const Text('Bridge Pattern Demo'),
                 actions: [
+                  // 右上角跳轉至結果清單頁面
                   IconButton(
-                    tooltip: 'Clear logs',
-                    icon: const Icon(Icons.delete),
-                    onPressed: vm.clearLogs,
+                    icon: Badge(
+                      label: Text('${vm.logs.length}'),
+                      child: const Icon(Icons.history),
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => BridgeLogPage(vm: vm)),
+                    ),
                   ),
                 ],
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    /// --- 說明卡（與其他 Demo 一致） ---
-                    _InfoBanner(
-                      title: '此 Demo 的目的',
-                      lines: const [
-                        '展示 bridge 模式：將「抽象（遙控器）」與「實作（裝置）」分離並以組合相連，使兩者可獨立演進。',
-                        '左側選擇裝置（TV/Radio/SmartLight），右側選擇遙控器（Basic/Advanced）。操作按鈕會透過 bridge 呼叫裝置行為。',
-                        '觀察狀態卡與下方 Log：更換遙控器不需改動裝置；新增裝置不需改動遙控器，達到低耦合可擴充的設計。',
-                      ],
-                    ),
-                    const SizedBox(height: 16),
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // info
+                      _buildInfoBanner(),
 
-                    /// --- 選擇列：裝置 + 遙控器 ---
-                    Row(
-                      children: [
-                        // 裝置 ChoiceChip
-                        Expanded(
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: List.generate(vm.deviceLabels.length, (i) {
-                              final isSelected = vm.selectedDeviceIndex == i;
-                              return ChoiceChip(
-                                label: Text(vm.deviceLabels[i]),
-                                selected: isSelected,
-                                onSelected: (_) => vm.selectDevice(i),
-                              );
-                            }),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // 遙控器 Segmented
-                        SegmentedButton<RemoteKind>(
-                          segments: const [
-                            ButtonSegment(value: RemoteKind.basic, label: Text('Basic')),
-                            ButtonSegment(value: RemoteKind.advanced, label: Text('Advanced')),
-                          ],
-                          selected: {vm.selectedRemote},
-                          onSelectionChanged: (s) => vm.selectRemote(s.first),
-                        ),
-                      ],
-                    ),
+                      const SizedBox(height: 16),
 
-                    const SizedBox(height: 12),
+                      // status live view
+                      _buildDeviceStatusPreview(vm),
 
-                    /// --- 狀態卡 ---
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Icon(
-                              vm.deviceLabels[vm.selectedDeviceIndex] == 'SmartLight'
-                                  ? Icons.lightbulb
-                                  : (vm.deviceLabels[vm.selectedDeviceIndex] == 'Radio'
-                                  ? Icons.radio
-                                  : Icons.tv),
-                              size: 28,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                vm.remote.currentStatus(),
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            FilledButton.tonal(
-                              onPressed: vm.togglePower,
-                              child: const Text('Power'),
-                            ),
-                          ],
-                        ),
+                      const Divider(height: 32, thickness: 1, color: Colors.black12),
+
+                      // control panel
+                      Expanded(
+                        child: _buildBridgeControlPanel(vm),
                       ),
-                    ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 16),
 
-                    /// --- 操作按鈕列 ---
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton(onPressed: vm.volumeUp, child: const Text('Volume +')),
-                        FilledButton(onPressed: vm.volumeDown, child: const Text('Volume -')),
-                        FilledButton(onPressed: vm.next, child: const Text('Next')),
-                        FilledButton(onPressed: vm.prev, child: const Text('Prev')),
-                        if (vm.selectedRemote == RemoteKind.advanced) ...[
-                          FilledButton.tonal(onPressed: vm.mute, child: const Text('Mute')),
-                          FilledButton.tonal(onPressed: vm.randomize, child: const Text('Randomize')),
-                          FilledButton.tonal(onPressed: vm.macroPowerPlay, child: const Text('Macro PowerPlay')),
-                        ],
-                      ],
-                    ),
-
-                    const Divider(height: 24),
-
-                    /// --- Log 清單 ---
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    Expanded(
-                      child: Card(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: vm.logs.length,
-                          separatorBuilder: (_, __) => const Divider(height: 12),
-                          itemBuilder: (_, index) => Text(vm.logs[index]),
-                        ),
-                      ),
-                    ),
-                  ],
+                      _buildActionButtonGroup(vm),
+                    ],
+                  ),
                 ),
               ),
           );
-
         }
+    );
+  }
+
+  Widget _buildInfoBanner() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 140),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(right: 8),
+          child: _InfoBanner(
+            title: '此 Demo 的目的',
+            lines: const [
+            '展示 bridge 模式：將「抽象（遙控器）」與「實作（裝置）」分離並以組合相連，使兩者可獨立演進。',
+            '選擇裝置（TV/Radio/SmartLight），選擇遙控器（Basic/Advanced）。操作按鈕會透過 bridge 呼叫裝置行為。',
+            '觀察狀態卡與Log：更換遙控器不需改動裝置；新增裝置不需改動遙控器，達到低耦合可擴充的設計。',
+            ]
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeviceStatusPreview(BridgeViewModel vm) {
+    final String deviceName = vm.deviceLabels[vm.selectedDeviceIndex];
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.shade100, width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+        ],
+      ),
+      child: Row(
+        children: [
+          // show icon
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: Colors.orange.shade50,
+            child: Icon(
+              deviceName == 'SmartLight' ? Icons.lightbulb : (deviceName == 'Radio' ? Icons.radio : Icons.tv),
+              color: Colors.orange.shade700,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(deviceName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(
+                  vm.remote.currentStatus(), // 透過 Bridge 獲取狀態
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          // 快速電源開關
+          Switch(
+            value: vm.remote.currentStatus().contains('ON'), // 簡單邏輯判斷
+            onChanged: (_) => vm.togglePower(),
+            activeThumbColor: Colors.orange,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBridgeControlPanel(BridgeViewModel vm) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // title
+          const Text('1. 配置橋接組合', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+          const SizedBox(height: 12),
+          // 裝置選擇
+          const Text('選擇裝置 (Implementor):', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: List.generate(vm.deviceLabels.length, (i) {
+              return ChoiceChip(
+                label: Text(vm.deviceLabels[i]),
+                selected: vm.selectedDeviceIndex == i,
+                onSelected: (_) => vm.selectDevice(i),
+              );
+            }),
+          ),
+
+          const SizedBox(height: 16),
+
+          // 遙控器選擇
+          const Text('選擇遙控器 (Abstraction):', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 8),
+          SegmentedButton<RemoteKind>(
+            segments: const [
+              ButtonSegment(value: RemoteKind.basic, label: Text('Basic'), icon: Icon(Icons.settings_input_component)),
+              ButtonSegment(value: RemoteKind.advanced, label: Text('Advanced'), icon: Icon(Icons.auto_awesome)),
+            ],
+            selected: {vm.selectedRemote},
+            onSelectionChanged: (s) => vm.selectRemote(s.first),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionBtn(IconData icon, String label, VoidCallback? onPreesed, {bool isAdvanced = false}) {
+    return ElevatedButton.icon(
+      onPressed: onPreesed,
+      icon: Icon(icon, size: 16),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isAdvanced ? Colors.deepPurple.shade50 : Colors.white,
+        foregroundColor: isAdvanced ? Colors.deepPurple : Colors.black87,
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Widget _buildActionButtonGroup(BridgeViewModel vm) {
+    return SingleChildScrollView(
+      child: Column(
+          children: [
+            const SizedBox(height: 24),
+            const Text('2. 遙控器操作', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+            const SizedBox(height: 12),
+            Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _actionBtn(Icons.volume_up, 'Vol +', vm.volumeUp),
+                  _actionBtn(Icons.volume_down, 'Vol -', vm.volumeDown),
+                  _actionBtn(Icons.skip_next, 'Next', vm.next),
+                  _actionBtn(Icons.skip_previous, 'Prev', vm.prev),
+
+                  // 進階功能按鈕 (進階遙控器獨有)
+                  if (vm.selectedRemote == RemoteKind.advanced) ...[
+                    _actionBtn(Icons.volume_off, 'Mute', vm.mute, isAdvanced: true),
+                    _actionBtn(Icons.shuffle, 'Random', vm.randomize, isAdvanced: true),
+                    _actionBtn(Icons.flash_on, 'Macro', vm.macroPowerPlay, isAdvanced: true),
+                  ],
+                ],
+            ),
+          ],
+      ),
     );
   }
 }

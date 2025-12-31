@@ -48,7 +48,7 @@ class _AdapterDemoBody extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Adapter 模式 Demo'),
             actions: [
-              // 右上角跳轉至結果清單頁面 (與 Prototype 邏輯一致)
+              // 右上角跳轉至結果清單頁面
               IconButton(
                 icon: Badge(
                   label: Text('${vm.results.length}'),
