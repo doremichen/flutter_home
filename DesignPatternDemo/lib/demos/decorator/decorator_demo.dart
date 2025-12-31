@@ -1,7 +1,14 @@
-
+///
+/// decorator_demo.dart
+/// DecoratorDemoPage
+///
+/// Created by Adam Chen on 2025/12/31
+/// Copyright © 2025 Abb company. All rights reserved.
+///
 import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
 
+import 'decorator_log_page.dart';
 import 'view_model/decorator_view_model.dart';
 
 class DecoratorDemoPage extends StatelessWidget {
@@ -38,187 +45,191 @@ class _DecoratorDemoBody extends StatelessWidget {
         final theme = Theme.of(context);
 
         return Scaffold(
-            appBar: AppBar(
-              title: const Text('Decorator Pattern Demo'),
-              actions: [
-                IconButton(
-                  tooltip: 'Clear logs',
-                  icon: const Icon(Icons.delete),
-                  onPressed: vm.clearLogs,
+          appBar: AppBar(
+            title: const Text('Decorator 模式 Demo'),
+            actions: [
+              // 右上角跳轉至 Log 頁面
+              IconButton(
+                icon: Badge(
+                  label: Text('${vm.logs.length}'),
+                  child: const Icon(Icons.receipt_long),
                 ),
-              ],
-            ),
-            body: Padding(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => DecoratorLogPage(vm: vm)),
+                ),
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
-                children: [
-                  _InfoBanner(
-                    title: '此 Demo 的目的',
-                    lines: const [
-                      '展示 Decorator（裝飾者）如何以「包裝」方式，動態為物件添加功能與屬性，而不需改動原類別。',
-                      '左側選擇基底飲品（Espresso/House/Dark），右側按鈕可逐一套用裝飾（Milk/Mocha/...）。',
-                      '下方狀態卡與明細列會即時顯示目前的組成與總價，支援撤銷最後一個裝飾與清空所有裝飾。',
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // info
+                    _buildInfoBanner(),
 
-                  // --- select + operator ----
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            ChoiceChip(
-                              label: const Text('Espresso'),
-                              selected: vm.selectedBase == BaseKind.espresso,
-                              onSelected: (_) => vm.selectBase(BaseKind.espresso),
-                            ),
-                            ChoiceChip(
-                              label: const Text('House Blend'),
-                              selected: vm.selectedBase == BaseKind.house,
-                              onSelected: (_) => vm.selectBase(BaseKind.house),
-                            ),
-                            ChoiceChip(
-                              label: const Text('Dark Roast'),
-                              selected: vm.selectedBase == BaseKind.dark,
-                              onSelected: (_) => vm.selectBase(BaseKind.dark),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Wrap(
-                          spacing: 8,
-                          children: [
-                            OutlinedButton.icon(
-                              onPressed: vm.undoLast,
-                              icon: const Icon(Icons.undo),
-                              label: const Text('Undo last'),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed: vm.clearDecorators,
-                              icon: const Icon(Icons.clear_all),
-                              label: const Text('Clear decorators'),
-                            ),
-                          ],
-                      ),
-                    ],
-                  ),
+                    const SizedBox(height: 16),
 
-                  const SizedBox(height: 12),
+                    // Preview
+                    _buildCoffeePreview(vm),
 
-                  // --- decorator buttons ---
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Wrap(
-                      spacing: 12,
-                      runSpacing: 8,
-                      children: [
-                        FilledButton.tonal(
-                          onPressed: () => vm.applyDecorator(DecoratorKind.milk),
-                          child: const Text('Add Milk (+10)'),
-                        ),
-                        FilledButton.tonal(
-                          onPressed: () => vm.applyDecorator(DecoratorKind.mocha),
-                          child: const Text('Add Mocha (+15)'),
-                        ),
-                        FilledButton.tonal(
-                          onPressed: () => vm.applyDecorator(DecoratorKind.whip),
-                          child: const Text('Add Whip (+12)'),
-                        ),
-                        FilledButton.tonal(
-                          onPressed: () => vm.applyDecorator(DecoratorKind.soy),
-                          child: const Text('Add Soy (+8)'),
-                        ),
-                        FilledButton.tonal(
-                          onPressed: () => vm.applyDecorator(DecoratorKind.sugar),
-                          child: const Text('Add Sugar (+2)'),
-                        ),
-                      ],
-                    ),
-                  ),
+                    const Divider(height: 32, thickness: 1, color: Colors.black12),
 
-                  const SizedBox(height: 12),
-
-                  // --- Status Card ---
-                  Card(
-                    child:Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.local_cafe, size: 28),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Composition: ${vm.description}', style: theme.textTheme.bodyLarge),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Total: \$${vm.totalCost.toStringAsFixed(2)}',
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const Divider(height: 24),
-
-                  // --- breakdown ---
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Breakdown:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  Expanded(
-                    child: Card(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: vm.breakdown.length,
-                        separatorBuilder: (_, __) => const Divider(height: 12),
-                        itemBuilder: (_, i) {
-                          final li = vm.breakdown[i];
-                          return Row(
-                            children: [
-                              Expanded(child: Text(li.label)),
-                              Text('\$${li.price.toStringAsFixed(2)}'),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                  if (vm.logs.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    SizedBox(
-                      height: 120,
-                      child: Card(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: vm.logs.length,
-                          separatorBuilder: (_, __) => const Divider(height: 8),
-                          itemBuilder: (_, i) => Text(vm.logs[i]),
-                        ),
-                      ),
-                    ),
+                    // control panel
+                    _buildControlPanel(vm),
                   ],
-                ],
               ),
             ),
+          ),
         );
       },
     );
   }
+
+  Widget _buildInfoBanner() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 140),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(right: 8),
+          child: _InfoBanner(
+              title: '此 Demo 的目的',
+              lines: const [
+                '展示 Decorator（裝飾者）如何以「包裝」方式，動態為物件添加功能與屬性，而不需改動原類別。',
+                '左側選擇基底飲品（Espresso/House/Dark），右側按鈕可逐一套用裝飾（Milk/Mocha/...）。',
+                '下方狀態卡與明細列會即時顯示目前的組成與總價，支援撤銷最後一個裝飾與清空所有裝飾。',              ]
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCoffeePreview(DecoratorViewModel vm) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.brown.shade100, width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: Colors.brown.shade50,
+            child: Icon(Icons.local_cafe, color: Colors.brown.shade700, size: 30),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '目前配方：${vm.description}',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '總計金額：\$${vm.totalCost.toStringAsFixed(2)}',
+                  style: TextStyle(fontSize: 18, color: Colors.brown.shade800, fontWeight: FontWeight.w900),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlPanel(DecoratorViewModel vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('1. 選擇基底飲品 (Base)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          children: [
+            _baseChip(vm, 'Espresso', BaseKind.espresso),
+            _baseChip(vm, 'House Blend', BaseKind.house),
+            _baseChip(vm, 'Dark Roast', BaseKind.dark),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+        const Text('2. 添加裝飾 (Decorators)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        const SizedBox(height: 12),
+
+        // 使用兩兩平行的封裝方法
+        _buildButtonPair(
+          left: _decoBtn(vm, 'Add Milk (+10)', DecoratorKind.milk),
+          right: _decoBtn(vm, 'Add Mocha (+15)', DecoratorKind.mocha),
+        ),
+        const SizedBox(height: 8),
+        _buildButtonPair(
+          left: _decoBtn(vm, 'Add Whip (+12)', DecoratorKind.whip),
+          right: _decoBtn(vm, 'Add Soy (+8)', DecoratorKind.soy),
+        ),
+        const SizedBox(height: 8),
+        _buildButtonPair(
+          left: _decoBtn(vm, 'Add Sugar (+2)', DecoratorKind.sugar),
+          right: Container(), // 奇數按鈕時右側留空或放其他功能
+        ),
+
+        const Divider(height: 40),
+
+        const Text('3. 訂單管理', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        const SizedBox(height: 12),
+        _buildButtonPair(
+          left: OutlinedButton.icon(
+            onPressed: vm.undoLast,
+            icon: const Icon(Icons.undo),
+            label: const Text('撤銷最後一項'),
+          ),
+          right: OutlinedButton.icon(
+            onPressed: vm.clearDecorators,
+            icon: const Icon(Icons.delete_outline),
+            label: const Text('清空裝飾'),
+            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+          ),
+        ),
+      ],
+    );
+  }
+
+// 輔助方法：兩兩對齊
+  Widget _buildButtonPair({required Widget left, required Widget right}) {
+    return Row(
+      children: [
+        Expanded(child: left),
+        const SizedBox(width: 8),
+        Expanded(child: right),
+      ],
+    );
+  }
+
+// 輔助方法：基底選擇 Chip
+  Widget _baseChip(DecoratorViewModel vm, String label, BaseKind kind) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: vm.selectedBase == kind,
+      onSelected: (_) => vm.selectBase(kind),
+    );
+  }
+
+// 輔助方法：裝飾按鈕
+  Widget _decoBtn(DecoratorViewModel vm, String label, DecoratorKind kind) {
+    return FilledButton.tonal(
+      onPressed: () => vm.applyDecorator(kind),
+      child: Text(label, style: const TextStyle(fontSize: 12)),
+    );
+  }
+
 }
 
 class _InfoBanner extends StatelessWidget {
