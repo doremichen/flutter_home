@@ -130,6 +130,39 @@ class _PrototypeDemoBodyState extends State<_PrototypeDemoBody> {
                       Expanded(
                         child: _buildControlPanel(vm),
                       ),
+                      const SizedBox(height: 24),
+                      // 按鈕改為並排或大按鈕
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton.icon(
+                              onPressed: vm.cloneWithCustomization,
+                              icon: const Icon(Icons.copy_all),
+                              label: const Text('執行克隆 (Clone)'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 1,
+                            child: OutlinedButton(
+                              onPressed: vm.resetCustomization,
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                side: const BorderSide(color: Colors.deepPurple),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              child: const Text('重置'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                 ),
               ),
@@ -289,41 +322,6 @@ class _PrototypeDemoBodyState extends State<_PrototypeDemoBody> {
           const SizedBox(height: 12),
 
           _buildAttributeCard(vm),
-
-          const SizedBox(height: 24),
-
-          // 按鈕改為並排或大按鈕
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: ElevatedButton.icon(
-                  onPressed: vm.cloneWithCustomization,
-                  icon: const Icon(Icons.copy_all),
-                  label: const Text('執行克隆 (Clone)'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 1,
-                child: OutlinedButton(
-                  onPressed: vm.resetCustomization,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: const BorderSide(color: Colors.deepPurple),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('重置'),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
