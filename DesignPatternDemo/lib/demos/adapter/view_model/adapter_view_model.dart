@@ -60,7 +60,7 @@ class AdapterViewModel extends ChangeNotifier {
     final m = current.reader.read();
     results.add(m);
     _log('讀取一次 → $m');
-    _lastToast = '${m.kind} = ${m.value.toStringAsFixed(2)} ${m.unit}';
+    _lastToast = '${m.kind} = ${m.new_value.toStringAsFixed(2)} ${m.unit}';
     notifyListeners();
   }
 

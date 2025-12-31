@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'adapter_history_page.dart';
 import 'view_model/adapter_view_model.dart';
 
 class AdapterDemoPage extends StatelessWidget {
@@ -45,132 +46,162 @@ class _AdapterDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Adapter Pattern Demo'),
+            title: const Text('Adapter 模式 Demo'),
             actions: [
+              // 右上角跳轉至結果清單頁面 (與 Prototype 邏輯一致)
               IconButton(
-                tooltip: 'Clear all',
-                icon: const Icon(Icons.delete),
-                onPressed: vm.clearAll,
+                icon: Badge(
+                  label: Text('${vm.results.length}'),
+                  child: const Icon(Icons.history),
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => AdapterHistoryPage(vm: vm)),
+                ),
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // --- info
-                _InfoBanner(
-                  title: '此 Demo 的目的',
-                  lines: const [
-                    '展示 Adapter 模式如何將「舊系統/第三方 API（英制）」轉換成「新系統期望的介面與單位（公制）」。',
-                    '選擇上方 Adapter（車速 mph→km/h / 溫度 °F→°C），使用按鈕讀取一次或批次讀取。',
-                    '下方清單顯示每次量測的轉換結果與時間戳，便於驗證適配器是否正確工作。',
-                  ],
-                ),
-                const SizedBox(height: 16,),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // info
+                  _buildInfoBanner(),
 
-                // --- Adapter (ChoiceChip) ---
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: List.generate(
-                        vm.adapters.length, (i) {
-                        final isSelected = vm.selectedIndex == i;
-                        return ChoiceChip(
-                          label: Text(vm.adapters[i].label),
-                          selected: isSelected,
-                          onSelected: (_) => vm.selectAdapter(i),
-                        );
-                      }),
+                  const SizedBox(height: 16),
+
+                  // preview
+                  _buildLivePreview(vm),
+
+                  const Divider(height: 32, thickness: 1, color: Colors.black12),
+
+                  // control panel
+                  Expanded(
+                    child: _buildControlPanel(vm),
                   ),
-                ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 12),
-
-                // --- adapter formula tip ----
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Formula: ${vm.current.formula}',
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(color: theme.colorScheme.outline),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // --- Buttons ----
-                Row(
-                  children: [
-                    FilledButton(
-                      onPressed: vm.readOnce,
-                      child: const Text('Read once'),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton.tonal(
-                      onPressed: () => vm.readBatch(5),
-                      child: const Text('Read batch ×5'),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // --- title of list ---
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Measurements:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-
-                // ---- result of list ---
-                Expanded(
-                  child: Card(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: vm.results.length,
-                      separatorBuilder: (_, __) => const Divider(height: 12),
-                      itemBuilder: (_, index) {
-                        final m = vm.results[index];
-                        return ListTile(
-                          leading: CircleAvatar(child: Text('${index + 1}')),
-                          title: Text('${m.kind} = ${m.value.toStringAsFixed(2)} ${m.unit}'),
-                          subtitle: Text(m.at.toLocal().toString()),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                // --- log ---
-                if (vm.logs.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  SizedBox(
-                    height: 120,
-                    child: Card(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: vm.logs.length,
-                        separatorBuilder: (_, __) => const Divider(height: 8),
-                        itemBuilder: (_, i) => Text(vm.logs[i]),
+                  // button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: vm.readOnce,
+                          icon: const Icon(Icons.play_arrow),
+                          label: const Text('讀取一次'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade600,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => vm.readBatch(5),
+                          icon: const Icon(Icons.replay_5),
+                          label: const Text('批次讀取 ×5'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            side: BorderSide(color: Colors.blue.shade600),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-
-              ],
+              ),
             ),
           ),
         );
       }
+    );
+  }
+
+  Widget _buildInfoBanner() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 140),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(right: 8),
+          child: _InfoBanner(
+            title: '此 Demo 的目的',
+            lines: const [
+              '展示 Adapter 模式如何將「舊系統/第三方 API（英制）」轉換成「新系統期望的介面與單位（公制）」。',
+              '選擇上方 Adapter（車速 mph→km/h / 溫度 °F→°C），使用按鈕讀取一次或批次讀取。',
+              '右上方可點選歷史清單顯示每次量測的轉換結果與時間戳，便於驗證適配器是否正確工作。',            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLivePreview(AdapterViewModel vm) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.blue.shade100, width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: Colors.blue.shade50,
+            child: Icon(Icons.sync_alt, color: Colors.blue.shade700),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  vm.current.label,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '公式: ${vm.current.formula}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlPanel(AdapterViewModel vm) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('1. 選擇適配器 (Adapter)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: List.generate(
+              vm.adapters.length, (i) {
+              return ChoiceChip(
+                  label: Text(vm.adapters[i].label),
+                  selected: vm.selectedIndex == i,
+                  onSelected: (_) => vm.selectAdapter(i),
+                );
+              }
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

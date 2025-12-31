@@ -19,10 +19,10 @@ class SpeedAdapter implements MeasurementReader {
   Measurement read() {
     final mph = _sensor.readMph();
     final kmh = mph * 1.60934; // convert value
-    return Measurement(kind: 'speed', value: kmh, unit: 'km/h');
+    return Measurement(kind: '速度', original_value: mph, new_value: kmh, unit: 'km/h');
   }
 
-  String get label => 'Speed (mph → km/h)';
+  String get label => '速度 (mph → km/h)';
   String get formula => 'km/h = mph × 1.60934';
 }
 
@@ -36,9 +36,9 @@ class TemperatureAdapter implements MeasurementReader {
   Measurement read() {
     final f = _thermo.readFahrenheit();
     final c = (f - 32) * 5 / 9; // convert formula
-    return Measurement(kind: 'temperature', value: c, unit: '°C');
+    return Measurement(kind: '溫度', original_value: f, new_value: c, unit: '°C');
   }
 
-  String get label => 'Temperature (°F → °C)';
+  String get label => '溫度 (°F → °C)';
   String get formula => '°C = (°F − 32) × 5/9';
 }

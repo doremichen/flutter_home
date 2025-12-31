@@ -7,18 +7,20 @@
 ///
 class Measurement {
   final String kind;  // 'speed' / 'temperature'
-  final double value;
+  final double original_value;
+  final double new_value;
   final String unit;  // 'km/h' / '°C'
   final DateTime at;
 
   Measurement({
     required this.kind,
-    required this.value,
+    required this.original_value,
+    required this.new_value,
     required this.unit,
     DateTime? date_time,
-  }) : this.at = date_time ?? DateTime.now();
+  }) : at = date_time ?? DateTime.now();
 
   @override
-  String toString() => '$kind: ${value.toStringAsFixed(2)} $unit @ ${at.toIso8601String()}';
+  String toString() => '$kind: ${original_value.toStringAsFixed(2)} -> ${new_value.toStringAsFixed(2)} $unit @ ${at.toIso8601String()}';
 
 }
