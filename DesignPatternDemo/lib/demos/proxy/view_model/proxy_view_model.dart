@@ -8,7 +8,7 @@
 import '../interface/data_service.dart';
 import '../model/data.dart';
 import '../pattern/proxy_service.dart';
-import 'package:flutter/material.dart.';
+import 'package:flutter/material.dart';
 
 import '../pattern/proxy_context.dart';
 

@@ -5,7 +5,7 @@
 /// Created by Adam Chen on 2025/12/18
 /// Copyright © 2025 Abb company. All rights reserved
 ///
-import 'package:flutter/material.dart.';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'pattern/proxy_context.dart';

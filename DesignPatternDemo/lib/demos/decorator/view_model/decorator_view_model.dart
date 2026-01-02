@@ -7,7 +7,7 @@
 ///
 
 import '../model/beverage.dart';
-import 'package:flutter/material.dart.';
+import 'package:flutter/material.dart';
 
 import '../pattern/decorators.dart';
 

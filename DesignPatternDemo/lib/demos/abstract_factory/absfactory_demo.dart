@@ -5,8 +5,8 @@
 /// Created by Adam Chen on 2025/12/11.
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
-import 'package:design_pattern_demo/demos/abstract_factory/view_model/absfactory_vm.dart';
-import 'package:flutter/material.dart.';
+import 'view_model/absfactory_vm.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'creator/abstract_factory.dart';

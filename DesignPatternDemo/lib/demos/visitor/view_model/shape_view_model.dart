@@ -8,7 +8,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart.';
+import 'package:flutter/material.dart';
 
 import '../../observer/model/log_event.dart';
 import '../model/circle.dart';

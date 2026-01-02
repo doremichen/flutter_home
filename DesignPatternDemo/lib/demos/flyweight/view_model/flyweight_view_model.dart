@@ -9,7 +9,7 @@
 import 'dart:math';
 
 import 'package:design_pattern_demo/demos/flyweight/pattern/sprite_factory.dart';
-import 'package:flutter/material.dart.';
+import 'package:flutter/material.dart';
 
 import '../model/sprite.dart';
 
