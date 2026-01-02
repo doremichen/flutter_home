@@ -62,24 +62,33 @@ class _DecoratorDemoBody extends StatelessWidget {
             ],
           ),
           body: SafeArea(
-            child: SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // info
-                    _buildInfoBanner(),
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // --- 1. 固定頂部 (固定高度區域) ---
+                  _buildInfoBanner(),
+                  const SizedBox(height: 16),
+                  _buildCoffeePreview(vm),
 
-                    const SizedBox(height: 16),
+                  const Divider(height: 32, thickness: 1, color: Colors.black12),
 
-                    // Preview
-                    _buildCoffeePreview(vm),
+                  // --- 2. 中間滾動區 (自動伸縮區域) ---
+                  // Expanded 會強制讓這個部分佔據剩餘的所有空間
+                  Expanded(
+                    child: SingleChildScrollView(
+                      // 這裡放原本的控制面板內容
+                      child: _buildControlPanel(vm),
+                    ),
+                  ),
 
-                    const Divider(height: 32, thickness: 1, color: Colors.black12),
+                  const Divider(height: 32, thickness: 1, color: Colors.black12),
 
-                    // control panel
-                    _buildControlPanel(vm),
-                  ],
+                  // --- 3. 固定底部 (操作按鈕) ---
+                  // 這部分會被推到螢幕最下方，且不會隨中間內容滾動
+                  _buildActionButtons(vm),
+                ],
               ),
             ),
           ),
@@ -114,7 +123,7 @@ class _DecoratorDemoBody extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.brown.shade100, width: 2),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(color: Colors.black.withValues(), blurRadius: 10, offset: const Offset(0, 4))
         ],
       ),
       child: Row(
@@ -150,22 +159,22 @@ class _DecoratorDemoBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('1. 選擇基底飲品 (Base)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        const Text('1. 選擇基底飲品 (Base)',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
+          runSpacing: 8,
           children: [
             _baseChip(vm, 'Espresso', BaseKind.espresso),
             _baseChip(vm, 'House Blend', BaseKind.house),
             _baseChip(vm, 'Dark Roast', BaseKind.dark),
           ],
         ),
-
         const SizedBox(height: 24),
-        const Text('2. 添加裝飾 (Decorators)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        const Text('2. 添加裝飾 (Decorators)',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
         const SizedBox(height: 12),
-
-        // 使用兩兩平行的封裝方法
         _buildButtonPair(
           left: _decoBtn(vm, 'Add Milk (+10)', DecoratorKind.milk),
           right: _decoBtn(vm, 'Add Mocha (+15)', DecoratorKind.mocha),
@@ -178,26 +187,9 @@ class _DecoratorDemoBody extends StatelessWidget {
         const SizedBox(height: 8),
         _buildButtonPair(
           left: _decoBtn(vm, 'Add Sugar (+2)', DecoratorKind.sugar),
-          right: Container(), // 奇數按鈕時右側留空或放其他功能
+          right: const SizedBox.shrink(),
         ),
-
-        const Divider(height: 40),
-
-        const Text('3. 訂單管理', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
-        const SizedBox(height: 12),
-        _buildButtonPair(
-          left: OutlinedButton.icon(
-            onPressed: vm.undoLast,
-            icon: const Icon(Icons.undo),
-            label: const Text('撤銷最後一項'),
-          ),
-          right: OutlinedButton.icon(
-            onPressed: vm.clearDecorators,
-            icon: const Icon(Icons.delete_outline),
-            label: const Text('清空裝飾'),
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-          ),
-        ),
+        // 這裡可以放更多未來會增加的裝飾項目...
       ],
     );
   }
@@ -227,6 +219,32 @@ class _DecoratorDemoBody extends StatelessWidget {
     return FilledButton.tonal(
       onPressed: () => vm.applyDecorator(kind),
       child: Text(label, style: const TextStyle(fontSize: 12)),
+    );
+  }
+
+  Widget _buildActionButtons(DecoratorViewModel vm) {
+    return Column(
+      children: [
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('3. 訂單管理', style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+        ),
+        const SizedBox(height: 12),
+        _buildButtonPair(
+          left: OutlinedButton.icon(
+            onPressed: vm.undoLast,
+            icon: const Icon(Icons.undo, size: 18),
+            label: const Text('撤銷', style: TextStyle(fontSize: 12)),
+          ),
+          right: OutlinedButton.icon(
+            onPressed: vm.clearDecorators,
+            icon: const Icon(Icons.delete_outline, size: 18),
+            label: const Text('清空裝飾', style: TextStyle(fontSize: 12)),
+            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+          ),
+        ),
+      ],
     );
   }
 
