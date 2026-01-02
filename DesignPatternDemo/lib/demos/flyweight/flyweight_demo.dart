@@ -8,6 +8,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'flyweight_settings_page.dart';
+import 'util/flyweight_util.dart';
 import 'view_model/flyweight_view_model.dart';
 
 
@@ -43,197 +45,283 @@ class _FlyweightDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Flyweight Pattern Demo'),
+            title: const Text('Flyweight 享元控制台'),
             actions: [
+              // 跳轉至設定與新增頁面
               IconButton(
-                tooltip: 'Clear logs',
-                icon: const Icon(Icons.delete),
-                onPressed: vm.clearLogs,
+                icon: const Icon(Icons.add_box_outlined),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => FlyweightSettingsPage(vm: vm)),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_sweep_outlined),
+                onPressed: vm.clearAll,
+                tooltip: '清除所有物件',
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
+          body: SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _InfoBanner(
-                  title: '此 Demo 的目的',
-                  lines: const [
-                    '展示 Flyweight（享元）如何將「大型且不變的內在狀態」共享（例如圖像/樣式），僅為每個物件保存「外在狀態」（位置、尺寸），以大幅降低記憶體使用量。',
-                    '選擇地圖物件類型與顏色，批次新增（×100/×1000）；開啟「隨機顏色」可增加共享元數量的變化。',
-                    '統計卡會比較享元 vs 天真（不共享）模式的記憶體估算與節省比例，並顯示唯一共享 Sprite 數量與物件總數。',
-                  ],
+                // 固定頂部：模式說明
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: _InfoBanner(
+                    title: 'Flyweight 核心理念',
+                    lines: const ['共享不變的內在狀態（Sprite），僅保存變動的外在狀態（座標）。'],
+                  ),
                 ),
+
                 const SizedBox(height: 16),
-                /// --- 控制區：類型 + 顏色 + 隨機色 + 操作按鈕 ---
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: List.generate(vm.types.length, (i) {
-                          final selected = vm.selectedTypeIndex == i;
-                          return ChoiceChip(
-                            label: Text(vm.types[i]),
-                            selected: selected,
-                            onSelected: (_) => vm.selectType(i),
-                          );
-                        }),
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    SegmentedButton<int>(
-                      segments: List.generate(
-                        vm.colors.length,
-                            (i) => ButtonSegment(value: i, label: Text(vm.colors[i])),
-                      ),
-                      selected: {vm.selectedColorIndex},
-                      onSelectionChanged: (s) => vm.selectColor(s.first),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: SwitchListTile(
-                        title: const Text('隨機顏色（增加共享元種類）'),
-                        value: vm.randomColors,
-                        onChanged: vm.toggleRandomizeColors,
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    FilledButton(
-                      onPressed: () => vm.addBatch(100),
-                      child: const Text('Add ×100'),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton.tonal(
-                      onPressed: () => vm.addBatch(1000),
-                      child: const Text('Add ×1000'),
-                    ),
-                    const SizedBox(width: 8),
-                    OutlinedButton.icon(
-                      onPressed: vm.clearAll,
-                      icon: const Icon(Icons.clear_all),
-                      label: const Text('Clear all'),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Card(
-                  child: Padding(
+                // 中間可捲動區：記憶體統計與物件列表
+                Expanded(
+                  child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Objects: ${vm.totalObjects} | Shared sprites: ${vm.uniqueFlyweights}',
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ),
-                            const Icon(Icons.memory),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Flyweight：${vm.memoryWithFlyweightKB.toStringAsFixed(2)} KB',
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                'Naive：${vm.memoryNaiveKB.toStringAsFixed(2)} KB',
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                'Saving：-${vm.memorySavingKB.toStringAsFixed(2)} KB '
-                                    '(${vm.memorySavingPct.toStringAsFixed(1)}%)',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        _buildMemoryStatsCard(vm, context), // 記憶體對比卡片
+                        const SizedBox(height: 16),
+                        _buildRecentObjectsList(vm), // 最近生成的物件
                       ],
                     ),
                   ),
                 ),
 
-                const Divider(height: 24),
-
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Recent objects:', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                Expanded(
-                  child: Card(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: vm.objects.length > 50 ? 50 : vm.objects.length,
-                      separatorBuilder: (_, __) => const Divider(height: 12),
-                      itemBuilder: (_, i) {
-                        final idx = vm.objects.length - 1 - i; // 從最新往回顯示
-                        final o = vm.objects[idx];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            child: Text('${idx + 1}'),
-                          ),
-                          title: Text('${o.sprite.type} (${o.sprite.color})'),
-                          subtitle: Text(o.toString()),
-                          trailing: Text('${o.sprite.sizeKB}KB'),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                /// --- Logs（可選） ---
-                if (vm.logs.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  SizedBox(
-                    height: 120,
-                    child: Card(
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: vm.logs.length,
-                        separatorBuilder: (_, __) => const Divider(height: 8),
-                        itemBuilder: (_, i) => Text(vm.logs[i]),
-                      ),
-                    ),
-                  ),
-                ],
+                // 固定底部：快速導向與日誌摘要
+                _buildBottomActionPanel(context, vm),
 
               ],
             ),
           ),
         );
-
       }
     );
-
   }
+
+  Widget _buildMemoryStatsCard(FlyweightViewModel vm, BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 4,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('效能統計數據', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Icon(Icons.analytics_outlined, color: theme.colorScheme.primary),
+              ],
+            ),
+            const Divider(height: 24),
+            _buildStatItem('物件總數', '${vm.totalObjects}', color: Colors.black87),
+            _buildStatItem('唯一共享元 (Sprites)', '${vm.uniqueFlyweights}', color: Colors.blue.shade700),
+            const SizedBox(height: 12),
+
+            // 記憶體對比區塊
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  _buildMemoryRow('享元模式 (Shared)', '${vm.memoryWithFlyweightKB.toStringAsFixed(2)} KB'),
+                  const SizedBox(height: 4),
+                  _buildMemoryRow('傳統模式 (Naive)', '${vm.memoryNaiveKB.toStringAsFixed(2)} KB'),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('節省空間', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Flexible(
+                        child: Text(
+                          '-${vm.memorySavingKB.toStringAsFixed(2)} KB (${vm.memorySavingPct.toStringAsFixed(1)}%)',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 輔助小組件：顯示單行統計
+  Widget _buildStatItem(String label, String value, {required Color color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+          Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  // 輔助小組件：顯示記憶體 KB
+  Widget _buildMemoryRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 12)),
+        Text(value, style: const TextStyle(fontSize: 12, fontFamily: 'monospace')),
+      ],
+    );
+  }
+
+  Widget _buildRecentObjectsList(FlyweightViewModel vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Text('最近生成的物件 (最新 50 筆)', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        vm.objects.isEmpty
+            ? _buildEmptyState()
+            : ListView.separated(
+          shrinkWrap: true, // 必須，因為在 SingleChildScrollView 內
+          physics: const NeverScrollableScrollPhysics(), // 滾動由外層 SingleChildScrollView 負責
+          itemCount: vm.objects.length > 50 ? 50 : vm.objects.length,
+          separatorBuilder: (_, __) => const Divider(height: 1, indent: 70),
+          itemBuilder: (_, i) {
+            // 反向取值，最新的在最上面
+            final index = vm.objects.length - 1 - i;
+            final obj = vm.objects[index];
+
+            return ListTile(
+              title: Text(
+                '${obj.sprite.type} [#${index + 1}]',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                '位置: (${obj.x.toInt()}, ${obj.y.toInt()}) | 共享 Sprite ID: ${obj.sprite.hashCode.toString().substring(0, 5)}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              trailing: Text(
+                '${obj.sprite.sizeKB} KB',
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(40),
+      child: Column(
+        children: [
+          Icon(Icons.hourglass_empty, size: 48, color: Colors.grey.shade300),
+          const SizedBox(height: 12),
+          const Text('目前尚無物件，點擊右上角新增', style: TextStyle(color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomActionPanel(BuildContext context, FlyweightViewModel vm) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, -4),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 1. 日誌摘要區域 (固定高度的終端機感日誌)
+          if (vm.logs.isNotEmpty) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('系統運行日誌', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+                Text('${vm.logs.length} 筆', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 80, // 固定高度，防止長度失控
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: ListView.builder(
+                  reverse: true, // 讓最新的日誌出現在最下面並自動捲動
+                  itemCount: vm.logs.length,
+                  itemBuilder: (context, index) {
+                    // 反向取值顯示最新
+                    final logIdx = vm.logs.length - 1 - index;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        '> ${vm.logs[logIdx]}',
+                        style: const TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 11,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // 2. 動作按鈕：導向設定頁面
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => FlyweightSettingsPage(vm: vm)),
+              ),
+              icon: const Icon(Icons.settings_suggest),
+              label: const Text('開啟配置面板並新增物件', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
 }
 
 
