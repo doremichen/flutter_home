@@ -66,13 +66,7 @@ class _FlyweightDemoBody extends StatelessWidget {
             child: Column(
               children: [
                 // 固定頂部：模式說明
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: _InfoBanner(
-                    title: 'Flyweight 核心理念',
-                    lines: const ['共享不變的內在狀態（Sprite），僅保存變動的外在狀態（座標）。'],
-                  ),
-                ),
+                _buildInfoBanner(),
 
                 const SizedBox(height: 16),
                 // 中間可捲動區：記憶體統計與物件列表
@@ -97,6 +91,25 @@ class _FlyweightDemoBody extends StatelessWidget {
           ),
         );
       }
+    );
+  }
+
+  Widget _buildInfoBanner() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 140),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(right: 8),
+          child: _InfoBanner(
+              title: '此 Demo 的目的',
+              lines: const [
+              '展示 Flyweight（享元）如何將「大型且不變的內在狀態」共享（例如圖像/樣式），僅為每個物件保存「外在狀態」（位置、尺寸），以大幅降低記憶體使用量。',
+              '選擇地圖物件類型與顏色，批次新增（×100/×1000）；開啟「隨機顏色」可增加共享元數量的變化。',
+              '統計卡會比較享元 vs 天真（不共享）模式的記憶體估算與節省比例，並顯示唯一共享 Sprite 數量與物件總數。',
+              ]
+          ),
+        ),
+      ),
     );
   }
 
@@ -235,7 +248,7 @@ class _FlyweightDemoBody extends StatelessWidget {
         children: [
           Icon(Icons.hourglass_empty, size: 48, color: Colors.grey.shade300),
           const SizedBox(height: 12),
-          const Text('目前尚無物件，點擊右上角新增', style: TextStyle(color: Colors.grey)),
+          const Text('目前尚無物件，請按開啟配置頁面新增物件', style: TextStyle(color: Colors.grey)),
         ],
       ),
     );

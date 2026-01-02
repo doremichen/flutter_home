@@ -240,55 +240,6 @@ class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
     );
   }
 
-  // Widget _buildControlPanelContent(FacadeViewModel vm) {
-  //   return Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const Text('1. 場景配置', style: TextStyle(fontWeight: FontWeight.bold)),
-  //       const SizedBox(height: 8),
-  //       Center(
-  //         child: SegmentedButton<SceneKind>(
-  //           segments: const [
-  //             ButtonSegment(value: SceneKind.movie, label: Text('Movie'), icon: Icon(Icons.movie)),
-  //             ButtonSegment(value: SceneKind.game, label: Text('Game'), icon: Icon(Icons.videogame_asset)),
-  //             ButtonSegment(value: SceneKind.music, label: Text('Music'), icon: Icon(Icons.music_note)),
-  //           ],
-  //           selected: {vm.selectedScene},
-  //           onSelectionChanged: (s) => vm.selectScene(s.first),
-  //         ),
-  //       ),
-  //       const SizedBox(height: 16),
-  //       // movie tile, gem title, play list
-  //       _buildSettingItem(
-  //         icon: Icons.movie_outlined,
-  //         label: '電影名稱',
-  //         value: vm.movieTitle,
-  //         onTap: () => _showEditDialog('電影名稱', _movieController, vm.setMovieTitle),
-  //       ),
-  //       _buildSettingItem(
-  //         icon: Icons.videogame_asset_outlined,
-  //         label: '遊戲標題',
-  //         value: vm.gameTitle,
-  //         onTap: () => _showEditDialog('遊戲標題', _gameController, vm.setGameTitle),
-  //       ),
-  //       _buildSettingItem(
-  //         icon: Icons.library_music_outlined,
-  //         label: '播放清單',
-  //         value: vm.playlistName,
-  //         onTap: () => _showEditDialog('播放清單', _playlistController, vm.setPlaylistName),
-  //       ),
-  //
-  //       const SizedBox(height: 24),
-  //       const Text('2. 子系統當前配置', style: TextStyle(fontWeight: FontWeight.bold)),
-  //       const SizedBox(height: 8),
-  //       _buildSubsystemInfo(Icons.speaker, '功放揚聲器', '音量與環繞聲隨場景自動調整'),
-  //       _buildSubsystemInfo(Icons.videocam, '投影設備', '解析度與長寬比由 Facade 控管'),
-  //       _buildSubsystemInfo(Icons.lightbulb, '智能燈光', '亮度依據目前模式自動調暗/調亮'),
-  //     ],
-  //   );
-  // }
-
   Widget _buildSubsystemInfo(IconData icon, String title, String desc) {
     return ListTile(
       leading: Icon(icon, size: 20),
