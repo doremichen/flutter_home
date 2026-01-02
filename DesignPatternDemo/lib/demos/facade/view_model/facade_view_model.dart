@@ -133,6 +133,17 @@ class FacadeViewModel extends ChangeNotifier {
     facade.clearLogs();
   }
 
+  String getCurrentTitle() {
+    switch (selectedScene) {
+      case SceneKind.movie:
+        return movieTitle.isEmpty? '無電影名稱' : movieTitle;
+      case SceneKind.game:
+        return gameTitle.isEmpty? '無遊戲名稱' : gameTitle;
+      case SceneKind.music:
+        return playlistName.isEmpty? '無音樂名稱' : playlistName;
+    }
+  }
+
 
 }
 

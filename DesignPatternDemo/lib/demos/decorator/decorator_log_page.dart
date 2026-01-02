@@ -91,7 +91,9 @@ class DecoratorLogPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: ListView.builder(
+      child: logs.isEmpty
+      ? const Center(child: Text('沒有操作紀錄'))
+      : ListView.builder(
         // 直接使用 ListView 處理滾動
         padding: const EdgeInsets.all(12),
         itemCount: logs.length,
