@@ -1,4 +1,10 @@
-
+///
+/// home_theater_facade.dart
+/// HomeTheaterFacade
+///
+/// Created by Adam Chen on 2025/12/16
+/// Copyright © 2025 Abb company. All rights reserved
+///
 import '../model/subsystem.dart';
 
 class HomeTheaterFacade {

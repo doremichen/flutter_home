@@ -5,7 +5,6 @@
 /// Created by Adam Chen on 2025/12/16.
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
-
 abstract class Beverage {
   String get name; // name
   double cost(); // cost

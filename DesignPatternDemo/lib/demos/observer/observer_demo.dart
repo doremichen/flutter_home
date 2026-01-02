@@ -1,4 +1,10 @@
-
+///
+/// observer_demo.dart
+/// ObserverDemoPage
+///
+/// Created by Adam Chen on 2025/12/24
+/// Copyright © 2025 Abb company. All rights reserved
+///
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

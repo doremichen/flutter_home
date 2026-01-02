@@ -1,5 +1,11 @@
-import 'package:design_pattern_demo/demos/visitor/model/rectangle.dart';
-import 'package:design_pattern_demo/demos/visitor/model/triangle.dart';
+///
+/// shape_visitor.dart
+/// ShapeVisitor
+/// Created by Adam Chen on 2025/12/29
+/// Copyright © 2025 Abb company. All rights reserved
+///
+import '../model/rectangle.dart';
+import '../model/triangle.dart';
 
 import '../model/circle.dart';
 

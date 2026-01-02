@@ -10,7 +10,6 @@
 /// Created by Adam Chen on 2025/12/12.
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
-
 /// Implementor：device interface
 abstract class Device {
   String get name;

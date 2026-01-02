@@ -12,7 +12,6 @@
 /// Created by Adam Chen on 2025/12/11.
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
-
 abstract class Engine {
   String spec();
 }

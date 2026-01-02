@@ -8,7 +8,6 @@
 /// Created by Adam Chen on 2025/12/11.
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
-
 import 'package:design_pattern_demo/demos/factory_method/model/product.dart';
 ///
 /// The VehicleFactory is interface for all factories.

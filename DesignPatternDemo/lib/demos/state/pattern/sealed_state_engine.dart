@@ -1,4 +1,10 @@
-
+///
+/// sealed_state_engine.dart
+/// SealedStateEngine
+///
+/// Created by Adam Chen on 2025/12/25
+/// Copyright © 2025 Abb company. All rights reserved
+///
 import '../interface/state_engine.dart';
 
 sealed class PlayerStateS {

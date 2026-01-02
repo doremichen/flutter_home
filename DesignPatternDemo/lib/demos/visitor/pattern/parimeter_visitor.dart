@@ -1,4 +1,10 @@
-
+///
+/// parimeter_visitor.dart
+/// PerimeterVisitor
+///
+/// Created by Adam Chen on 2025/12/29
+/// Copyright © 2025 Abb company. All rights reserved
+///
 import '../model/circle.dart';
 
 import '../model/rectangle.dart';
