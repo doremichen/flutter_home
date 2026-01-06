@@ -8,8 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'pattern/proxy_context.dart';
-import 'pattern/proxy_service.dart';
+import 'proxy_settings_page.dart';
 import 'view_model/proxy_view_model.dart';
 
 class ProxyDemoPage extends StatelessWidget {
@@ -33,16 +32,6 @@ class _ProxyDemoBody extends StatefulWidget {
 }
 
 class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
-  // key input controller
-  final _keyController = TextEditingController(text: 'article-100');
-
-  @override
-  void dispose() {
-    // dispose
-    _keyController.dispose();
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,194 +46,170 @@ class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
           }
         });
 
-        final theme = Theme.of(context);
-
-        // 同步輸入框
-        _keyController.value = _keyController.value.copyWith(text: vm.lastKey);
-
         return Scaffold(
-            appBar: AppBar(
-              title: const Text('Proxy Pattern Demo'),
-              actions: [
-                IconButton(
-                  tooltip: 'Clear logs',
-                  icon: const Icon(Icons.delete),
-                  onPressed: vm.clearLogs,
-                ),
-              ],
-            ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _InfoBanner(
-                      title: '此 Demo 的目的',
-                      lines: const [
-                        '展示 Proxy（代理）如何在不改變用戶端介面的前提下，加入「延遲載入」、「存取控制」、「快取」、「紀錄」等橫切需求。',
-                        '選擇不同 Proxy 組合（Virtual/Protection/Caching/Logging/Composite），輸入 Key 後進行一次或批次讀取。',
-                        '統計卡顯示：總請求、真實服務呼叫次數、快取命中/未命中；清單與 Log 可觀察各代理的實際行為。',
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    /// --- 控制列：選擇 Proxy + 角色 + Key ---
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                const Text('Proxy：'),
-                                const SizedBox(width: 8),
-                                SegmentedButton<ProxyKind>(
-                                  segments: const [
-                                    ButtonSegment(value: ProxyKind.virtualOnly, label: Text('Virtual')),
-                                    ButtonSegment(value: ProxyKind.protectionOnly, label: Text('Protection')),
-                                    ButtonSegment(value: ProxyKind.cachingOnly, label: Text('Caching')),
-                                    ButtonSegment(value: ProxyKind.loggingAndCaching, label: Text('Logging+Caching')),
-                                    ButtonSegment(value: ProxyKind.compositeAll, label: Text('Composite')),
-                                  ],
-                                  selected: {vm.selectedKind},
-                                  onSelectionChanged: (s) => vm.selectKind(s.first),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                const Text('角色：'),
-                                const SizedBox(width: 8),
-                                SegmentedButton<AccessRole>(
-                                  segments: const [
-                                    ButtonSegment(value: AccessRole.guest, label: Text('Guest')),
-                                    ButtonSegment(value: AccessRole.user, label: Text('User')),
-                                    ButtonSegment(value: AccessRole.admin, label: Text('Admin')),
-                                  ],
-                                  selected: {vm.role},
-                                  onSelectionChanged: (s) => vm.setRole(s.first),
-                                ),
-                                const Spacer(),
-                                SizedBox(
-                                  width: 280,
-                                  child: TextField(
-                                    controller: _keyController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Key',
-                                      hintText: 'e.g., article-100',
-                                    ),
-                                    onChanged: vm.setKey,
-                                  ),
-                                ),
-
-                              ],
-                            ),
-                          ],
-
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // --- Button ---
-                    Row(
-                      children: [
-                        FilledButton(onPressed: vm.fetchOnce, child: const Text('Fetch once')),
-                        const SizedBox(width: 8),
-                        FilledButton.tonal(
-                          onPressed: () => vm.fetchBatch(10),
-                          child: const Text('Fetch batch ×10'),
-                        ),
-                        const SizedBox(width: 8),
-                        OutlinedButton.icon(
-                          onPressed: vm.clearResults,
-                          icon: const Icon(Icons.clear_all),
-                          label: const Text('Clear results'),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // --- Summary ---
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(child: Text('Total requests: ${vm.totalRequests}')),
-                                Expanded(child: Text('Real service calls: ${vm.serviceCalls}')),
-                                Expanded(child: Text('Cache hits: ${vm.cacheHits} / misses: ${vm.cacheMisses}')),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '說明：快取命中代表直接回覆，不會呼叫真實服務；Protection 在 Guest 角色下會回覆 403，不計入實際呼叫。',
-                              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const Divider(height: 24),
-
-                    // --- Result（Card + ListView.separated）---
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Results:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    SizedBox(
-                      height: 400, // 給結果清單一個固定高度，或者根據需求調整
-                      child: Card(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: vm.results.length,
-                          separatorBuilder: (_, __) => const Divider(height: 12),
-                          itemBuilder: (_, i) {
-                            final d = vm.results[i];
-                            return ListTile(
-                              leading: CircleAvatar(child: Text('${i + 1}')),
-                              title: Text('${d.key}  (${d.source})'),
-                              subtitle: Text(d.content),
-                              trailing: Text(d.at.toLocal().toString()),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-
-                    // --- logs ---
-                    if (vm.logs.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                      SizedBox(
-                        height: 140,
-                        child: Card(
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(12),
-                            itemCount: vm.logs.length,
-                            separatorBuilder: (_, __) => const Divider(height: 8),
-                            itemBuilder: (_, i) => Text(vm.logs[i]),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+          appBar: AppBar(
+            title: const Text('Proxy 代理模式監控'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.tune), // 跳轉設定
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => ProxySettingsPage(vm: vm)),
                 ),
               ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: vm.clearResults,
+                tooltip: '清空結果',
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                // info banner
+                _buildInfoBanner(),
+
+                // summary card
+                _buildProxySummaryCard(vm),
+
+                // result list
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('請求結果',
+                          style: TextStyle(fontWeight: FontWeight.bold))
+                          ),
+                ),
+                Expanded(
+                  child: _buildResultsList(vm),
+                ),
+
+                // system log
+                _buildBottomLogPanel(context, vm),
+              ],
             ),
+          ),
         );
       }
     );
   }
+
+  Widget _buildInfoBanner() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 140),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(right: 8),
+          child: _InfoBanner(
+            title: '此 Demo 的目的',
+            lines: const [
+              '展示 Proxy（代理）如何在不改變用戶端介面的前提下，加入「延遲載入」、「存取控制」、「快取」、「紀錄」等橫切需求。',
+              '選擇不同 Proxy 組合（Virtual/Protection/Caching/Logging/Composite），輸入 Key 後進行一次或批次讀取。',
+              '統計卡顯示：總請求、真實服務呼叫次數、快取命中/未命中；清單與 Log 可觀察各代理的實際行為。',
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProxySummaryCard(ProxyViewModel vm) {
+    return Card(
+      margin: const EdgeInsets.all(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // title bar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(child: Text('總請求: ${vm.totalRequests}')),
+                Expanded(child: Text('真實服務: ${vm.serviceCalls}')),
+                Expanded(child: Text('快取命中: ${vm.cacheHits} / misses: ${vm.cacheMisses}')),
+              ],
+            ),
+            const Divider(),
+            // summary
+            Text('當前 Proxy: ${vm.selectedKind.name}',
+                style: const TextStyle(fontSize: 12, color: Colors.grey)
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultsList(ProxyViewModel vm) {
+    if (vm.results.isEmpty) {
+      return const Center(child: Text('尚無請求紀錄', style: TextStyle(color: Colors.grey)));
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: vm.results.length,
+      separatorBuilder: (_, __) => const Divider(),
+      itemBuilder: (context, i) {
+        // 最新的結果顯示在最上方
+        final reverseIndex = vm.results.length - 1 - i;
+        final result = vm.results[reverseIndex];
+
+        return ListTile(
+          leading: Icon(
+            result.source == 'Cache' ? Icons.bolt : Icons.cloud_download,
+            color: result.source == 'Cache' ? Colors.orange : Colors.blue,
+          ),
+          title: Text('Key: ${result.key}'),
+          subtitle: Text(result.content),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(result.source, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+              Text(
+                '${result.at.minute}:${result.at.second}',
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomLogPanel(BuildContext context, ProxyViewModel vm) {
+    if (vm.logs.isEmpty) return const SizedBox.shrink(); // 如果為空，直接不佔位
+
+    return Container(
+      height: 150, // 稍微高一點，因為 Proxy 的日誌通常較長（包含權限檢查）
+      color: Colors.black87,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('代理執行路徑紀錄', style: TextStyle(color: Colors.white70, fontSize: 11)),
+              IconButton(icon: const Icon(Icons.delete_sweep, size: 16, color: Colors.white70), onPressed: vm.clearLogs),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              reverse: true,
+              itemCount: vm.logs.length,
+              itemBuilder: (_, i) => Text('> ${vm.logs[vm.logs.length - 1 - i]}',
+                  style: const TextStyle(color: Colors.greenAccent, fontSize: 11, fontFamily: 'monospace')),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
 }
 
 class _InfoBanner extends StatelessWidget {
