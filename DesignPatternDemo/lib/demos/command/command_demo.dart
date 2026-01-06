@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'command_control_page.dart';
 import 'view_model/command_view_model.dart';
 
 
@@ -68,197 +69,157 @@ class _CommandDemoBodyState extends State<_CommandDemoBody> {
             .copyWith(text: vm.value.toString());
 
         return Scaffold(
-            appBar: AppBar(
-              title: const Text('Command Pattern Demo'),
-            ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // --- Info Banner ---
-                  _InfoBanner(
-                    title: '此 Demo 的目的',
-                    lines: const [
-                      '展示 Command（命令）如何將「操作」封裝成物件，支援排程、紀錄、Undo/Redo 與宏命令。',
-                      '輸入數值後，透過加/減/乘/除等命令更新 Calculator；可執行 Undo/Redo 回復狀態。',
-                      '宏命令將多個命令視為一個，執行時依序呼叫，撤銷時反向回滾。',
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // --- Control region: input + basic + macro commands ---
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Input fields
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 12,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 100,
-                                child: TextField(
-                                  controller: _amountController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Amount',
-                                    hintText: '例如：10 / 2',
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (t) {
-                                    final v = double.tryParse(t) ?? vm.value;
-                                    vm.setAmount(v);
-                                  },
-                                ),
-                              ),
-
-                              SizedBox(
-                                width: 160,
-                                child: TextField(
-                                  controller: _setController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Set value',
-                                    hintText: '例如：0 / 100',
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-
-                              FilledButton.tonal(
-                                onPressed: () {
-                                  final v = double.tryParse(_setController.text);
-                                  if (v != null) {
-                                    vm.setValue(v);
-                                  }
-                                },
-                                child: const Text('Set value'),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Basic commands
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 8,
-                            children: [
-                              FilledButton(onPressed: vm.add, child: const Text('Add')),
-                              FilledButton(onPressed: vm.sub, child: const Text('Subtract')),
-                              FilledButton(onPressed: vm.mul, child: const Text('Multiply')),
-                              FilledButton(onPressed: vm.div, child: const Text('Divide')),
-                              OutlinedButton.icon(
-                                onPressed: vm.undo,
-                                icon: const Icon(Icons.undo),
-                                label: const Text('Undo'),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: vm.redo,
-                                icon: const Icon(Icons.redo),
-                                label: const Text('Redo'),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Macro commands
-                          Wrap(
-                            spacing: 12,
-                            runSpacing: 8,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              const Text('宏命令：'),
-                              FilledButton.tonal(
-                                onPressed: vm.macroBoost,
-                                child: const Text('Boost（+amount → ×2）'),
-                              ),
-                              FilledButton.tonal(
-                                onPressed: vm.macroDiscount,
-                                child: const Text('Discount（-amount → ÷2）'),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: vm.clearAll,
-                                icon: const Icon(Icons.clear_all),
-                                label: const Text('Clear'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // --- Status card ---
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calculate, size: 28),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Current value: ${vm.cal_value.toStringAsFixed(2)}',
-                              style: theme.textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const Divider(height: 24),
-
-                  // --- History ---
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('History:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  Card(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: vm.history.length,
-                      separatorBuilder: (_, __) => const Divider(height: 12),
-                      itemBuilder: (_, i) => Text(vm.history[i]),
-                    ),
-                  ),
-
-                  // --- Logs ---
-                  if (vm.logs.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    SizedBox(
-                      height: 120,
-                      child: Card(
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: vm.logs.length,
-                          separatorBuilder: (_, __) => const Divider(height: 8),
-                          itemBuilder: (_, i) => Text(vm.logs[i]),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+          appBar: AppBar(
+            title: const Text('命令模式展示'),
+            actions: [
+              IconButton(
+                tooltip: '進入控制台',
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  // 跳轉到設定頁面
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CommandControlPage(vm : vm)),
+                  );
+                },
               ),
-            ),
+              IconButton(
+                tooltip: '清除所有',
+                icon: const Icon(Icons.delete_outline),
+                onPressed: vm.clearAll,
+              ),
+            ],
           ),
+          body: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                // info banner
+                Expanded(
+                  child: _buildInfoBanner(),
+                ),
+                const Divider(height: 1),
+
+                // Status card
+                Expanded(
+                  child: _buildCommandSummaryCard(context, vm),
+                ),
+                const Divider(height: 1),
+
+                // History
+                Expanded(
+                  child: _buildCommandHistory(context, vm),
+                ),
+                const Divider(height: 1),
+
+                // system log
+                Expanded(
+                  child: _buildBottomLogPanel(context, vm),
+                ),
+
+              ],
+
+            ),
+
+          ),
+
         );
       }
+    );
+  }
+
+  Widget _buildInfoBanner() {
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: _InfoBanner(
+          title: '此 Demo 的目的',
+          lines: const [
+            '展示 Command（命令）如何將「操作」封裝成物件，支援排程、紀錄、Undo/Redo 與宏命令。',
+            '輸入數值後，透過加/減/乘/除等命令更新 Calculator；可執行 Undo/Redo 回復狀態。',
+            '宏命令將多個命令視為一個，執行時依序呼叫，撤銷時反向回滾。',          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommandSummaryCard(BuildContext context, CommandViewModel vm) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Icon(Icons.calculate, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Current value: ${vm.cal_value.toStringAsFixed(2)}',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommandHistory(BuildContext context, CommandViewModel vm) {
+    if (vm.history.isEmpty) {
+      return const Center(child: Text('暫無歷史紀錄', style: TextStyle(color: Colors.grey)));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('歷史紀錄:', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Expanded(
+          child: Card(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: vm.history.length,
+              separatorBuilder: (_, __) => const Divider(height: 12),
+              itemBuilder: (_, i) => Text(vm.history[i]),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomLogPanel(BuildContext context, CommandViewModel vm) {
+    if (vm.logs.isEmpty) {
+      return const Center(child: Text('暫無Log紀錄', style: TextStyle(color: Colors.grey)));
+    }
+    return Container(
+      color: Colors.black87,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('命令執行紀錄', style: TextStyle(color: Colors.white70, fontSize: 11)),
+              IconButton(icon: const Icon(Icons.delete_sweep, size: 16, color: Colors.white70), onPressed: vm.clearLogs),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              reverse: true,
+              itemCount: vm.logs.length,
+              itemBuilder: (_, i) => Text('> ${vm.logs[vm.logs.length - 1 - i]}',
+                  style: const TextStyle(color: Colors.greenAccent, fontSize: 11, fontFamily: 'monospace')),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

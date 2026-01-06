@@ -86,4 +86,9 @@ class CommandViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  void clearLogs() {
+    logs.clear();
+    notifyListeners();
+  }
 }
