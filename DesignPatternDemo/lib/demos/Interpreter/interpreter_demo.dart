@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'interpreter_control_page.dart';
 import 'view_model/interpreter_view_model.dart';
 
 class InterpreterDemoPage extends StatelessWidget {
@@ -24,32 +25,8 @@ class InterpreterDemoPage extends StatelessWidget {
 
 }
 
-class _InterpreterDemoBody extends StatefulWidget {
+class _InterpreterDemoBody extends StatelessWidget {
   const _InterpreterDemoBody();
-
-  @override
-  State<StatefulWidget> createState() => _InterpreterDemoBodyState();
-
-}
-
-class _InterpreterDemoBodyState extends State<_InterpreterDemoBody> {
-  // text editor controller
-  final _srcController = TextEditingController();
-
-  // init state
-  @override
-  void initState() {
-    super.initState();
-    final vm = context.read<InterpreterViewModel>();
-    _srcController.text = vm.program;
-  }
-
-  // dispose controller
-  @override
-  void dispose() {
-    _srcController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +43,6 @@ class _InterpreterDemoBodyState extends State<_InterpreterDemoBody> {
         });
 
         final theme = Theme.of(context);
-        // sync input
-        if (_srcController.text != vm.program) {
-          _srcController.text = vm.program;
-        }
 
         final isError = vm.lastValue == null
             && vm.ast.isEmpty
@@ -77,207 +50,228 @@ class _InterpreterDemoBodyState extends State<_InterpreterDemoBody> {
             && vm.env.isEmpty
             && vm.logs.isNotEmpty;
 
-
         return Scaffold(
-          appBar: AppBar(title: const Text('Interpreter Pattern Demo')),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 900;
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    /// --- 說明卡 ---
-                    _InfoBanner(
-                      title: '此 Demo 的目的',
-                      lines: const [
-                        '展示 Interpreter（直譯器）如何以 Tokenizer + Parser + AST + eval 建構並執行一個小型 DSL。',
-                        'DSL 支援變數指派與基本運算/函式（max/min/abs），以分號分隔多個語句。',
-                        '右側 Cards 顯示執行結果、Environment、Tokens、AST 與 Logs。',
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    /// --- 控制區 ---
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextField(
-                              controller: _srcController,
-                              maxLines: 6,
-                              decoration: const InputDecoration(
-                                labelText: 'DSL 程式',
-                                hintText: '輸入指派與表達式；可用分號分隔多個語句。',
-                              ),
-                              onChanged: vm.setProgram,
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                FilledButton(onPressed: vm.run, child: const Text('Run')),
-                                OutlinedButton.icon(
-                                  onPressed: vm.clearAll,
-                                  icon: const Icon(Icons.clear_all),
-                                  label: const Text('Clear'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+              title: const Text('Interpreter Pattern Demo'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.tune), // 跳轉設定
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const InterpreterControlPage(),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    /// --- Result / Env ---
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.play_circle, size: 28),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'Result: ${vm.lastValue?.toStringAsFixed(4) ?? '(無)'}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: isError
-                                          ? Theme.of(context).colorScheme.error
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            const Text('Environment:',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Wrap(
-                              spacing: 12,
-                              runSpacing: 8,
-                              children: vm.env.entries
-                                  .map((e) => Chip(
-                                label: Text(
-                                    '${e.key} = ${e.value.toStringAsFixed(4)}'),
-                              ))
-                                  .toList(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const Divider(height: 32),
-
-                    /// --- Tokens / AST / Logs ---
-                    isWide
-                        ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _TokensCard(vm)),
-                        const SizedBox(width: 12),
-                        Expanded(child: _AstCard(vm)),
-                        const SizedBox(width: 12),
-                        Expanded(child: _LogsCard(vm)),
-                      ],
-                    )
-                        : Column(
-                      children: [
-                        _TokensCard(vm),
-                        const SizedBox(height: 12),
-                        _AstCard(vm),
-                        const SizedBox(height: 12),
-                        _LogsCard(vm),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: vm.clearAll,
+                tooltip: '清空',
+              ),
+            ],
           ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                // 1. 目的介紹 (Banner)
+                Expanded(flex: 1, child: _buildInfoBanner()),
+                const Divider(height: 1),
+
+                // 2. 執行結果 (Result)
+                Expanded(flex: 1, child: _buildResultCard(context, vm, isError)),
+                const Divider(height: 1),
+
+                // 3. 詳盡數據 (Tokens / AST / Logs)
+                Expanded(
+                  flex: 3, // 給予較大的比例顯示詳細資訊
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(child: _buildTokensCard(vm)),
+                        const VerticalDivider(width: 1),
+                        Expanded(child: _buildAstCard(vm)),
+                        const VerticalDivider(width: 1),
+                        Expanded(child: _buildLogsCard(vm)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         );
       }
+
+
     );
   }
 
-  Widget _TokensCard(InterpreterViewModel vm) {
+  Widget _buildTokensCard(InterpreterViewModel vm) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Tokens:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: vm.tokens.length,
-              itemBuilder: (_, i) => Text(vm.tokens[i].toString()),
+      margin: const EdgeInsets.all(8), // 稍微增加邊距，避免視覺上太擁擠
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Tokens', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+          Expanded(
+            child: Scrollbar(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                itemCount: vm.tokens.length,
+                itemBuilder: (context, index) {
+                  final token = vm.tokens[index];
+                  return Text('[${token.type}] ${token.lexeme}', style: const TextStyle(fontSize: 11));
+                },
+              ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildAstCard(InterpreterViewModel vm) {
+    return Card(
+      margin: const EdgeInsets.all(8), // 稍微增加邊距，避免視覺上太擁擠
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('AST 結構', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+          Expanded(
+            child: Scrollbar(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  vm.ast.isEmpty ? '等待解析...' : vm.ast,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildLogsCard(InterpreterViewModel vm) {
+    return Card(
+      margin: const EdgeInsets.all(8), // 稍微增加邊距，避免視覺上太擁擠
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('執行日誌', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+          Expanded(
+            child: Scrollbar(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: vm.logs.length,
+                itemBuilder: (context, index) {
+                  return Text('> ${vm.logs[vm.logs.length - 1 - index]}',
+                      style: const TextStyle(color: Colors.blueGrey, fontSize: 10));
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoBanner() {
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: _InfoBanner(
+          title: '此 Demo 的目的',
+          lines: const [
+            '展示 Interpreter（直譯器）如何以 Tokenizer + Parser + AST + eval 建構並執行一個小型 DSL。',
+            'DSL 支援變數指派與基本運算/函式（max/min/abs），以分號分隔多個語句。',
+            '如下顯示執行結果、Environment、Tokens、AST 與 Logs。',
           ],
         ),
       ),
     );
   }
 
-
-  Widget _AstCard(InterpreterViewModel vm) {
+  Widget _buildResultCard(BuildContext context, InterpreterViewModel vm, bool isError) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('AST:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(
-              vm.ast.isEmpty ? '(empty)' : vm.ast,
-              softWrap: true,
-            ),
-          ],
+      margin: const EdgeInsets.all(8), // 稍微增加邊距，避免視覺上太擁擠
+      child: Scrollbar(
+        thumbVisibility: true, // 讓捲軸常駐，提醒使用者可以滾動
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Result 顯示區
+              Row(
+                children: [
+                  Icon(
+                    Icons.play_circle,
+                    size: 28,
+                    color: isError ? Theme.of(context).colorScheme.error : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Result: ${vm.lastValue?.toStringAsFixed(4) ?? '(無)'}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isError ? Theme.of(context).colorScheme.error : null,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const Divider(height: 24), // 加入分隔線讓層次更清晰
+
+              // 2. Environment 標題
+              const Text('Environment (變數狀態):',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+
+              // 3. 變數列表 (Wrap 會自動換行，外層 Scrollview 會處理垂直高度)
+              if (vm.env.isEmpty)
+                const Text('目前無定義變數', style: TextStyle(color: Colors.grey, fontSize: 13))
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: vm.env.entries.map((e) {
+                    return Chip(
+                      visualDensity: VisualDensity.compact, // 縮小 Chip 體積
+                      label: Text(
+                        '${e.key} = ${e.value.toStringAsFixed(4)}',
+                        style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                    );
+                  }).toList(),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-
-  Widget _LogsCard(InterpreterViewModel vm) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Logs:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: vm.logs.length,
-              separatorBuilder: (_, __) => const Divider(height: 8),
-              itemBuilder: (_, i) => Text(vm.logs[i]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
 
 }
 
