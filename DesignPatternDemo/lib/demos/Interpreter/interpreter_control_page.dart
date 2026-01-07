@@ -42,7 +42,7 @@ class _InterpreterControlPageState extends State<InterpreterControlPage> {
     final vm = context.watch<InterpreterViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('直譯模式控制')),
+      appBar: AppBar(title: const Text('直譯模式控制台')),
       body: SafeArea(
         child: SingleChildScrollView( //
           padding: const EdgeInsets.all(12),
