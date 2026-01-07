@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'mediator_control_page.dart';
 import 'model/subsystem.dart';
 import 'view_model/mediator_view_model.dart';
 
@@ -48,199 +49,41 @@ class _MediatorDemoBody extends StatelessWidget {
             title: const Text('Mediator Pattern Demo'),
             actions: [
               IconButton(
+                icon: const Icon(Icons.tune), // 跳轉設定
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: vm,
+                      child: const MediatorControlPage(),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
                 tooltip: 'Clear logs',
                 icon: const Icon(Icons.delete),
                 onPressed: vm.clearLogs,
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                /// ===== main content =====
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        /// --- Info banner ---
-                        _InfoBanner(
-                          title: '此 Demo 的目的',
-                          lines: const [
-                            '展示 Mediator（仲介者）集中管理元件互動。',
-                            '場景與環境事件由仲介者決策並觸發聯動。',
-                            '降低耦合、集中規則、提升可維護性。',
-                          ],
-                        ),
-                        const SizedBox(height: 16),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  // info banner
+                  Expanded(flex: 1, child: _buildInfoBanner()),
+                  const SizedBox(height: 12),
 
-                        /// --- Control ---
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                /// Scene
-                                const Text('Scene'),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    SegmentedButton<SceneKind>(
-                                      segments: const [
-                                        ButtonSegment(
-                                            value: SceneKind.movieNight,
-                                            label: Text('Movie Night')),
-                                        ButtonSegment(
-                                            value: SceneKind.wakeUp,
-                                            label: Text('Wake Up')),
-                                        ButtonSegment(
-                                            value: SceneKind.focus,
-                                            label: Text('Focus')),
-                                      ],
-                                      selected: {vm.scene},
-                                      onSelectionChanged: (s) =>
-                                          vm.applyScene(s.first),
-                                    ),
-                                    FilledButton.tonal(
-                                      onPressed: vm.toggleLight,
-                                      child: Text(
-                                        vm.light.on ? 'Light OFF' : 'Light ON',
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                  // subsystem status
+                  Expanded(flex: 1, child: _buildSubsystemStatus(context, vm)),
+                  const SizedBox(height: 12),
 
-                                const SizedBox(height: 16),
-
-                                /// Ambient light
-                                const Text('Ambient light'),
-                                Slider(
-                                  value: vm.ambient.toDouble(),
-                                  min: 0,
-                                  max: 100,
-                                  divisions: 10,
-                                  label: '${vm.ambient}',
-                                  onChanged: (v) =>
-                                      vm.setAmbient(v.round()),
-                                ),
-
-                                /// Temperature
-                                const SizedBox(height: 12),
-                                const Text('Temperature (°C)'),
-                                Slider(
-                                  value: vm.thermostat.temperature,
-                                  min: 16,
-                                  max: 32,
-                                  divisions: 16,
-                                  label: vm.thermostat.temperature
-                                      .toStringAsFixed(1),
-                                  onChanged: vm.setTemperature,
-                                ),
-
-                                /// Motion
-                                const SizedBox(height: 12),
-                                SwitchListTile(
-                                  value: vm.motionSensor.detected,
-                                  onChanged: vm.setMotion,
-                                  title: const Text('Motion detected'),
-                                  dense: true,
-                                ),
-
-                                /// Light brightness
-                                const SizedBox(height: 12),
-                                const Text('Light brightness'),
-                                Slider(
-                                  value: vm.light.brightness.toDouble(),
-                                  min: 0,
-                                  max: 100,
-                                  divisions: 10,
-                                  label: '${vm.light.brightness}',
-                                  onChanged: vm.light.on
-                                      ? (v) => vm
-                                      .setLightBrightness(v.round())
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        /// --- subsystem status ---
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              children: [
-                                _deviceTile(
-                                  icon: Icons.lightbulb,
-                                  title: 'Light',
-                                  subtitle: vm.light.toString(),
-                                  trailing:
-                                  'ON: ${vm.light.on ? "Yes" : "No"}',
-                                ),
-                                const Divider(),
-                                _deviceTile(
-                                  icon: Icons.blinds,
-                                  title: 'Blinds',
-                                  subtitle: vm.blinds.toString(),
-                                ),
-                                const Divider(),
-                                _deviceTile(
-                                  icon: Icons.thermostat,
-                                  title: 'Thermostat',
-                                  subtitle: vm.thermostat.toString(),
-                                ),
-                                const Divider(),
-                                _deviceTile(
-                                  icon: Icons.motion_photos_on,
-                                  title: 'MotionSensor',
-                                  subtitle: vm.motionSensor.toString(),
-                                ),
-                                const Divider(),
-                                _deviceTile(
-                                  icon: Icons.speaker,
-                                  title: 'Speaker',
-                                  subtitle: vm.speaker.toString(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                /// ===== Logs =====
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Logs:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                SizedBox(
-                  height: 180,
-                  child: Card(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: vm.logs.length,
-                      separatorBuilder: (_, __) =>
-                      const Divider(height: 8),
-                      itemBuilder: (_, i) => Text(vm.logs[i]),
-                    ),
-                  ),
-                ),
-              ],
+                  // logs card
+                  Expanded(flex: 1, child: _buildLogs(context, vm)),
+                ],
+              ),
             ),
           ),
         );
@@ -249,17 +92,171 @@ class _MediatorDemoBody extends StatelessWidget {
 
   }
 
-  Widget _deviceTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    String? trailing,
-  }) {
+  Widget _buildInfoBanner() {
+    return Scrollbar(
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: _InfoBanner(
+          title: '此 Demo 的目的',
+          lines: const [
+            '展示 Mediator（仲介者）集中管理元件互動。',
+            '場景與環境事件由仲介者決策並觸發聯動。',
+            '降低耦合、集中規則、提升可維護性。',
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubsystemStatus(BuildContext context, MediatorViewModel vm) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 區塊標題
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Icon(Icons.settings_remote, size: 18, color: Colors.blueGrey),
+                  SizedBox(width: 8),
+                  Text('當前設備狀態', style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            const Divider(),
+
+            // 設備列表
+            _buildEnhancedTile(
+              context,
+              icon: Icons.lightbulb,
+              title: '智慧燈具',
+              status: vm.light.on ? '已開啟' : '已關閉',
+              detail: '亮度: ${vm.light.brightness}%',
+              isActive: vm.light.on,
+              activeColor: Colors.amber,
+            ),
+            _buildEnhancedTile(
+              context,
+              icon: Icons.blinds,
+              title: '智慧窗簾',
+              status: vm.blinds.open ? '已開啟' : '已關閉',
+              detail: '開合度: ${vm.blinds.level}%',
+              isActive: vm.blinds.open,
+              activeColor: Colors.blue,
+            ),
+            _buildEnhancedTile(
+              context,
+              icon: Icons.thermostat,
+              title: '恆溫器',
+              status: '${vm.thermostat.temperature}°C',
+              detail: '運作中',
+              isActive: true,
+              activeColor: Colors.orange,
+            ),
+            _buildEnhancedTile(
+              context,
+              icon: Icons.motion_photos_on,
+              title: '感測器',
+              status: vm.motionSensor.detected ? '偵測中' : '待命',
+              detail: vm.motionSensor.detected ? '發現活動' : '無異常',
+              isActive: vm.motionSensor.detected,
+              activeColor: Colors.redAccent,
+            ),
+            _buildEnhancedTile(
+              context,
+              icon: Icons.speaker,
+              title: '音響系統',
+              status: vm.speaker.on ? '播放中' : '靜音',
+              detail: '音量: ${vm.speaker.volume}%',
+              isActive: vm.speaker.on,
+              activeColor: Colors.purple,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnhancedTile(
+      BuildContext context, {
+        required IconData icon,
+        required String title,
+        required String status,
+        required String detail,
+        required bool isActive,
+        required Color activeColor,
+      }) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: trailing != null ? Text(trailing) : null,
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isActive ? activeColor.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: isActive ? activeColor : Colors.grey,
+          size: 20,
+        ),
+      ),
+      title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+      subtitle: Text(detail, style: const TextStyle(fontSize: 12)),
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isActive ? activeColor.withValues(alpha: 0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isActive ? activeColor.withValues(alpha: 0.5) : Colors.grey.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Text(
+          status,
+          style: TextStyle(
+            color: isActive ? activeColor : Colors.grey,
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogs(BuildContext context, MediatorViewModel vm) {
+    if (vm.logs.isEmpty) return const Text('沒有紀錄!');
+
+    return Container(
+      height: 150,
+      color: Colors.black87,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('紀錄', style: TextStyle(color: Colors.white70, fontSize: 11)),
+              IconButton(icon: const Icon(Icons.delete_sweep, size: 16, color: Colors.white70), onPressed: vm.clearLogs),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              reverse: true,
+              itemCount: vm.logs.length,
+              itemBuilder: (_, i) => Text('> ${vm.logs[vm.logs.length - 1 - i]}',
+                  style: const TextStyle(color: Colors.greenAccent, fontSize: 11, fontFamily: 'monospace')),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

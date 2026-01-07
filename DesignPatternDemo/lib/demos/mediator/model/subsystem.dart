@@ -52,11 +52,15 @@ class Light extends Component {
 
 // Blinds
 class Blinds extends Component {
-  int level = 50; // 0..100（0=full on, 100=full off）
+  int level = 50;
+
+  bool open = false;
+
   Blinds(): super('Blinds');
 
   // --- operator ---;
   void setLevel(int v) {
+    open = (v == 0)? false : true;
     level = v.clamp(0, 100);
     mediator.notify(this, 'blindsLevelChanged');
   }
@@ -98,7 +102,10 @@ class MotionSensor extends Component {
 // Speaker
 class Speaker extends Component {
   bool on = false;
-  String mode = 'idle'; // cinema / news / focus / idle
+  String mode = 'idle';
+
+  int volume = 100;
+
   Speaker(): super('Speaker');
 
   // --- operator ---
