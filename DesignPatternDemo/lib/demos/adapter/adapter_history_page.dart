@@ -17,7 +17,7 @@ class AdapterHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: const Text('轉換歷史紀錄'),
+            title: const Text('適配器歷史紀錄'),
             actions: [
               TextButton(
                 onPressed: () {

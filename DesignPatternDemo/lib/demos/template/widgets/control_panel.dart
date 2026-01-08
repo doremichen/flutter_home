@@ -17,71 +17,117 @@ class ControlPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ReportViewModel>();
+    final theme = Theme.of(context);
 
-    return Card(
-      margin: const EdgeInsets.all(12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('選擇模板：'),
-                const SizedBox(width: 12),
-                DropdownButton<TemplateType>(
-                  value: vm.selectedType,
-                  items: TemplateType.values
-                      .map((t) => DropdownMenuItem(
-                    value: t,
-                    child: Text(switch (t) {
-                      TemplateType.sales => 'Sales',
-                      TemplateType.inventory => 'Inventory',
-                      TemplateType.audit => 'Audit',
-                      TemplateType.functionBased => 'Function（函式步驟）',
-                    }),
-                  ))
-                      .toList(),
-                  onChanged: (t) {
-                    if (t != null) context.read<ReportViewModel>().selectTemplate(t);
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.shuffle),
-                    label: const Text('產生資料'),
-                    onPressed: () => context.read<ReportViewModel>().generateData(),
-                  ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('執行模板'),
-                    onPressed: () => context.read<ReportViewModel>().runTemplate(),
-                  ),
-                  FilterChip(
-                    selected: vm.auto,
-                    label: const Text('自動（每秒）'),
-                    avatar: Icon(
-                      vm.auto ? Icons.play_circle_fill : Icons.pause_circle_filled,
-                      color: vm.auto ? Colors.green : Colors.grey,
-                    ),
-                    onSelected: (_) => context.read<ReportViewModel>().toggleAuto(),
-                  ),
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.delete_outline),
-                    label: const Text('清空'),
-                    onPressed: () => context.read<ReportViewModel>().clear(),
-                  ),
-                ],
-            ),
-          ],
-        ),
+    return Container(
+      width: double.infinity, // assure the width is  same as screen width
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.15), width: 1.5),
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // select template type
+          _buildSelectTemplateType(context, vm),
+
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Divider(height: 1),
+          ),
+
+          // action button
+          _buildActionButton(context, vm),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectTemplateType(BuildContext context, ReportViewModel vm) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // title
+        Text(
+          '報告模板配置 (Template)',
+          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        // dropdown menu
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<TemplateType>(
+              value: vm.selectedType,
+              isExpanded: true,
+              itemHeight: null,  // auto
+              icon: const Icon(Icons.arrow_drop_down_circle_outlined, size: 20),
+              onChanged: (type) => vm.selectTemplate(type!),
+              items: TemplateType.values.map((type) {
+                return DropdownMenuItem<TemplateType>(
+                  value: type,
+                  child: Text(
+                    switch (type) {
+                      TemplateType.sales => 'Sales Report (銷售分析)',
+                      TemplateType.inventory => 'Inventory (庫存盤點)',
+                      TemplateType.audit => 'Audit (年度稽核)',
+                      TemplateType.functionBased => 'Function (函式回調步驟)',
+                    }
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, ReportViewModel vm) {
+    final theme = Theme.of(context);
+    return Wrap(
+      spacing: 8,
+      runSpacing: 10,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        FilledButton.icon(
+          onPressed: () => vm.generateData(),
+          icon: const Icon(Icons.shuffle, size: 18),
+          label: const Text('產生資料'),
+        ),
+        ElevatedButton.icon(
+          onPressed: () => vm.runTemplate(),
+          icon: const Icon(Icons.play_arrow, size: 18),
+          label: const Text('執行模板'),
+        ),
+        ChoiceChip(
+          selected: vm.auto,
+          onSelected: (_) => vm.toggleAuto(),
+          label: Text(vm.auto ? '自動中' : '手動模式'),
+          avatar: Icon(
+            vm.auto ? Icons.play_circle_fill : Icons.pause_circle_filled,
+            size: 18,
+            color: vm.auto ? theme.colorScheme.onPrimary : theme.disabledColor,
+          ),
+          selectedColor: Colors.green,
+          labelStyle: TextStyle(color: vm.auto ? Colors.white : null),
+        ),
+        OutlinedButton.icon(
+          onPressed: () => vm.clear(),
+          icon: const Icon(Icons.delete_sweep_outlined, size: 18),
+          label: const Text('清空'),
+          style: OutlinedButton.styleFrom(foregroundColor: Colors.redAccent),
+        ),
+      ],
     );
   }
 

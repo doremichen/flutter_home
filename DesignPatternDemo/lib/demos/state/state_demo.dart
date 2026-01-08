@@ -48,40 +48,42 @@ class _StateDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(title: const Text('State Pattern Demo (MVVM)')),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. 說明區 (佔 1 份空間，獨立捲動)
-              Expanded(
-                flex: 1,
-                child: _buildScrollableCard(
-                  context: context,
-                  widgets: [_buildBorderedSection(child: const InfoBanner())],
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. 說明區 (佔 1 份空間，獨立捲動)
+                Expanded(
+                  flex: 1,
+                  child: _buildScrollableCard(
+                    context: context,
+                    widgets: [_buildBorderedSection(child: const InfoBanner())],
+                  ),
                 ),
-              ),
 
-              // 2. 控制區 (佔 3 份空間，獨立捲動)
-              Expanded(
-                flex: 3,
-                child: _buildScrollableCard(
-                  context: context,
-                  widgets: [_buildBorderedSection(child: const ControlPanel())],
+                // 2. 控制區 (佔 3 份空間，獨立捲動)
+                Expanded(
+                  flex: 3,
+                  child: _buildScrollableCard(
+                    context: context,
+                    widgets: [_buildBorderedSection(child: const ControlPanel())],
+                  ),
                 ),
-              ),
 
-              // 3. 結果清單 (固定高度，獨立捲動)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Text('系統執行結果', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                  child: _buildBorderedSection(child: const LogList()),
+                // 3. 結果清單 (固定高度，獨立捲動)
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Text('系統執行結果', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-              ),
-            ],
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+                    child: _buildBorderedSection(child: const LogList()),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       }
