@@ -12,15 +12,17 @@ import '../pattern/caretaker.dart';
 
 class MementoViewModel extends ChangeNotifier {
   // Text document
-  final TextDocument document = TextDocument(intial: 'default text');
+  final TextDocument document = TextDocument(intial: '');
   // History manager
-  final HistoryManager historyManager = HistoryManager();
+  final HistoryManager _historyManager = HistoryManager();
 
   // UI binding
   String stagedText = '';
   int stagedCaret = 0;
   String? lastToast;
   List<String> logs = [];
+  List<DocumentMemento> get history => _historyManager.history;
+  DocumentMemento? get current => _historyManager.current;
 
   MementoViewModel() {
     _checkpoint('Initial');
@@ -29,6 +31,11 @@ class MementoViewModel extends ChangeNotifier {
   // --- Basic Operator ---
   void setStagedText(String t) {
     stagedText = t;
+    // update stage caret
+    if (stagedCaret > t.length) {
+      stagedCaret = t.length;
+    }
+
     notifyListeners();
   }
 
@@ -85,7 +92,7 @@ class MementoViewModel extends ChangeNotifier {
 
   // --- undo/redo ----
   void undo() {
-    final snap = historyManager.undo();
+    final snap = _historyManager.undo();
     if (snap == null) {
       lastToast = 'No more undo';
       notifyListeners();
@@ -98,7 +105,7 @@ class MementoViewModel extends ChangeNotifier {
   }
 
   void redo() {
-    final snap = historyManager.redo();
+    final snap = _historyManager.redo();
     if (snap == null) {
       lastToast = 'No more redo';
       notifyListeners();
@@ -118,10 +125,22 @@ class MementoViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearHistory() {
+    _historyManager.clear();
+    lastToast = 'History cleared';
+    logs.clear();
+    notifyListeners();
+  }
+
+  void clearLogs() {
+    logs.clear();
+    notifyListeners();
+  }
+
   void clearAll() {
     document.setContent('');
     document.moveCaret(0);
-    historyManager.clear();
+    _historyManager.clear();
     _checkpoint('Initial');
     stagedText = '';
     stagedCaret = 0;
@@ -132,7 +151,7 @@ class MementoViewModel extends ChangeNotifier {
 
   void _checkpoint(String s) {
     final snap = document.createMemento(s);
-    historyManager.checkpoint(snap);
+    _historyManager.checkpoint(snap);
   }
 
 }
