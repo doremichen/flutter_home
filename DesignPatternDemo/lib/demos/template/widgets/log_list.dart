@@ -18,7 +18,6 @@ class LogList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ReportViewModel>();
-    final logs = vm.logs;
     final lines = vm.lines;
 
     return Card(

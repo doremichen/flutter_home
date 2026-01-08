@@ -16,68 +16,119 @@ class ControlPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ShapeViewModel>();
+    final theme = Theme.of(context);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Text('選擇 Visitor：'),
-                const SizedBox(width: 12),
-                DropdownButton<VisitorType>(
-                  value: vm.visitorType,
-                  items: VisitorType.values
-                      .map((t) => DropdownMenuItem(
-                    value: t,
-                    child: Text(switch (t) {
-                      VisitorType.area => 'Area（面積）',
-                      VisitorType.perimeter => 'Perimeter（週長）',
-                    }),
-                  ))
-                      .toList(),
-                  onChanged: (t) {
-                    if (t != null) context.read<ShapeViewModel>().selectVisitor(t);
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.category),
-                  label: const Text('產生圖形'),
-                  onPressed: () => context.read<ShapeViewModel>().generateShapes(),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('執行 Visitor'),
-                  onPressed: () => context.read<ShapeViewModel>().runVisitor(),
-                ),
-                FilterChip(
-                  selected: vm.auto,
-                  label: const Text('自動（每秒）'),
-                  avatar: Icon(
-                    vm.auto ? Icons.play_circle_fill : Icons.pause_circle_filled,
-                    color: vm.auto ? Colors.green : Colors.grey,
-                  ),
-                  onSelected: (_) => context.read<ShapeViewModel>().toggleAuto(),
-                ),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.delete_outline),
-                  label: const Text('清空'),
-                  onPressed: () => context.read<ShapeViewModel>().clear(),
-                ),
-              ],
-            ),
-          ],
-        ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.dividerColor.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // visitor type select
+          _buildSelectVisitorType(context, vm),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Divider(height: 1),
+          ),
+          // action button
+          _buildActionButton(context, vm),
+        ],
       ),
     );
+  }
+
+  Widget _buildSelectVisitorType(BuildContext context, ShapeViewModel vm) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // title
+        Text(
+          'Visitor 計算模式',
+          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        // dropdown menu
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: theme.dividerColor.withValues(alpha: 0.1)),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<VisitorType>(
+              value: vm.visitorType,
+              isExpanded: true, // 核心修正：防止水平溢出
+              itemHeight: null, // 核心修正：讓長文字能自定義高度
+              onChanged: (t) {
+                if (t != null) context.read<ShapeViewModel>().selectVisitor(t);
+              },
+              items: VisitorType.values.map((t) {
+                return DropdownMenuItem(
+                  value: t,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      switch (t) {
+                        VisitorType.area => 'Area (計算圖形總面積)',
+                        VisitorType.perimeter => 'Perimeter (計算圖形總週長)',
+                      },
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, ShapeViewModel vm) {
+    final theme = Theme.of(context);
+    return Wrap(
+        spacing: 8,
+        runSpacing: 10,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          FilledButton.icon(
+            onPressed: () => vm.generateShapes(),
+            icon: const Icon(Icons.category, size: 18),
+            label: const Text('產生圖形'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => vm.runVisitor(),
+            icon: const Icon(Icons.play_arrow, size: 18),
+            label: const Text('執行計算'),
+          ),
+          ChoiceChip(
+            selected: vm.auto,
+            onSelected: (_) => vm.toggleAuto(),
+            label: Text(vm.auto ? '自動中' : '手動'),
+            avatar: Icon(
+              vm.auto ? Icons.play_circle_fill : Icons.pause_circle_filled,
+              size: 18,
+              color: vm.auto ? Colors.white : theme.disabledColor,
+            ),
+            selectedColor: Colors.green,
+            labelStyle: TextStyle(color: vm.auto ? Colors.white : null),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => vm.clear(),
+            icon: const Icon(Icons.delete_outline, size: 18),
+            label: const Text('清空'),
+            style: OutlinedButton.styleFrom(foregroundColor: Colors.redAccent),
+          ),
+        ],
+    );
+
   }
 }

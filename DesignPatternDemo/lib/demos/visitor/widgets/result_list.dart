@@ -20,35 +20,50 @@ class ResultList extends StatelessWidget {
     final logs = vm.logs;
 
     return Card(
-      margin: const EdgeInsets.all(12),
-      child: SizedBox(
-        height: 360,
-        child: Column(
-          children: [
-            if (output != null)
-              ListTile(
-                leading: const Icon(Icons.description_outlined),
-                title: const Text('Visitor 輸出（前 6 行）'),
-                subtitle: Text(output.take(6).join('\n')),
-              ),
-            const Divider(height: 1),
-            Expanded(
-              child: logs.isEmpty
-                  ? const Center(child: Text('尚無日誌，請在上方產生圖形並執行 Visitor'))
-                  : ListView.separated(
-                itemCount: logs.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final e = logs[index];
-                  return ListTile(
-                    leading: const Icon(Icons.article_outlined),
-                    title: Text(e.message),
-                    subtitle: Text(e.timestamp.toLocal().toString()),
-                  );
-                },
-              ),
-            ),
-          ],
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        children: [
+          if (output != null && output.isNotEmpty)
+            _buildSummary(context, output),
+          // const Divider(height: 1),
+          // Expanded(
+          //   child: logs.isEmpty
+          //       ? const Center(child: Text('尚無日誌，請在上方產生圖形並執行 Visitor'))
+          //       : ListView.separated(
+          //     itemCount: logs.length,
+          //     separatorBuilder: (_, __) => const Divider(height: 1),
+          //     itemBuilder: (context, index) {
+          //       final e = logs[index];
+          //       return ListTile(
+          //         leading: const Icon(Icons.article_outlined),
+          //         title: Text(e.message),
+          //         subtitle: Text(e.timestamp.toLocal().toString()),
+          //       );
+          //     },
+          //   ),
+          // ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummary(BuildContext context, List<String> lines) {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 130), // limit height to 120
+      padding: const EdgeInsets.all(12),
+      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: const Icon(Icons.description_outlined, color: Colors.blue),
+        title: const Text('Visitor輸出', style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(
+          lines.take(6).join('\n'),
+          style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
         ),
       ),
     );
