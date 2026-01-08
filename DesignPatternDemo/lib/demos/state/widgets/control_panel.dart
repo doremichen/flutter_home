@@ -24,79 +24,113 @@ class ControlPanel extends StatelessWidget {
           child: Column(
             children: [
               // Engine 選擇
-              Row(
-                children: [
-                  const Text('選擇 State Engine：'),
-                  const SizedBox(width: 12),
-                  DropdownButton<EngineType>(
-                    value: vm.selectedType,
-                    items: EngineType.values
-                        .map(
-                          (t) => DropdownMenuItem(
-                        value: t,
-                        child: Text(switch (t) {
-                          EngineType.classic => 'Classic',
-                          EngineType.enumBased => 'Enum',
-                          EngineType.sealed => 'Sealed',
-                        }),
-                      ),
-                    )
-                        .toList(),
-                    onChanged: (t) {
-                      if (t != null) {
-                        context.read<PlayerViewModel>().selectEngine(t);
-                      }
-                    },
-                  ),
-                ],
-              ),
+              _buildEngineSelector(context, vm),
+
               const SizedBox(height: 12),
               // 操作按鈕
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Play'),
-                    onPressed: () => context.read<PlayerViewModel>().play(),
-                  ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.pause),
-                    label: const Text('Pause'),
-                    onPressed: () => context.read<PlayerViewModel>().pause(),
-                  ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.stop),
-                    label: const Text('Stop'),
-                    onPressed: () => context.read<PlayerViewModel>().stop(),
-                  ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.restart_alt),
-                    label: const Text('Reset'),
-                    onPressed: () => context.read<PlayerViewModel>().reset(),
-                  ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    selected: vm.auto,
-                    label: const Text('自動（每秒）'),
-                    avatar: Icon(
-                      vm.auto ? Icons.play_circle_fill : Icons.pause_circle_filled,
-                      color: vm.auto ? Colors.green : Colors.grey,
-                    ),
-                    onSelected: (_) => context.read<PlayerViewModel>().toggleAuto(),
-                  ),
-                  const SizedBox(width: 8),
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.delete_outline),
-                    label: const Text('清空日誌'),
-                    onPressed: () => context.read<PlayerViewModel>().clearLogs(),
-                  ),
-                ],
-              ),
+              _buildActionPanel(context, vm),
+
             ],
           ),
         ),
+    );
+  }
+
+  Widget _buildEngineSelector(BuildContext context, PlayerViewModel vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // title
+        const Text(
+          '選擇 State Engine',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        const SizedBox(height: 8),
+        // Dropdown menu
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.2)),
+            color: Theme.of(context).colorScheme.surface,
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<EngineType>(
+              value: vm.selectedType,
+              itemHeight: 64,
+              isExpanded: true,
+              onChanged: (t) => context.read<PlayerViewModel>().selectEngine(t!),
+              items: EngineType.values.map((t) {
+                return DropdownMenuItem<EngineType>(
+                  value: t,
+                  child: Text(
+                    _engineName(t),
+                  ),
+                );
+              }).toList(),
+            ),
+
+          ),
+
+        ),
+      ],
+    );
+  }
+
+  String _engineName(EngineType t) {
+    switch (t) {
+      case EngineType.classic:
+        return 'Classic (傳統狀態模式)';
+      case EngineType.enumBased:
+        return 'Enum (枚舉驅動狀態)';
+      case EngineType.sealed:
+        return 'Sealed (密封類別狀態)';
+    }
+  }
+
+  Widget _buildActionPanel(BuildContext context, PlayerViewModel vm) {
+    return Wrap(
+      spacing: 12,    // 水平間距
+      runSpacing: 8, // 垂直間距
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(Icons.play_arrow),
+          label: const Text('Play'),
+          onPressed: () => context.read<PlayerViewModel>().play(),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.pause),
+          label: const Text('Pause'),
+          onPressed: () => context.read<PlayerViewModel>().pause(),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.stop),
+          label: const Text('Stop'),
+          onPressed: () => context.read<PlayerViewModel>().stop(),
+        ),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.restart_alt),
+          label: const Text('Reset'),
+          onPressed: () => context.read<PlayerViewModel>().reset(),
+        ),
+        const SizedBox(width: 8),
+        FilterChip(
+          selected: vm.auto,
+          label: const Text('自動（每秒）'),
+          avatar: Icon(
+            vm.auto ? Icons.play_circle_fill : Icons.pause_circle_filled,
+            color: vm.auto ? Colors.green : Colors.grey,
+          ),
+          onSelected: (_) => context.read<PlayerViewModel>().toggleAuto(),
+        ),
+        const SizedBox(width: 8),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.delete_outline),
+          label: const Text('清空日誌'),
+          onPressed: () => context.read<PlayerViewModel>().clearLogs(),
+        ),
+      ],
     );
   }
 

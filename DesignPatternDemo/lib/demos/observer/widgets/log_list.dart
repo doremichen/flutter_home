@@ -23,7 +23,7 @@ class LogList extends StatelessWidget {
         child: SizedBox(
           height: 360,
           child: items.isEmpty
-              ? const Center(child: Text('尚無事件，請在上方新增或啟用自動模式'))
+              ? const Center(child: Text('尚無log，請在上方新增或啟用自動模式'))
               : ListView.separated(
             itemCount: items.length,
             separatorBuilder: (_, __) => const Divider(height: 1),

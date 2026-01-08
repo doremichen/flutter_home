@@ -117,7 +117,6 @@ class PlayerViewModel extends ChangeNotifier {
   void clearLogs() {
     _logs.clear();
     lastToast = 'Logs cleared';
-    _log('Logs cleared');
     notifyListeners();
   }
 

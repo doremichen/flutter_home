@@ -50,6 +50,7 @@ class LogViewModel extends ChangeNotifier {
         break;
     }
     selected = type;
+    // Observer log event state
     _subscription = _adapter?.stream.listen((events) {
       this.events.clear();
       this.events.addAll(events);
