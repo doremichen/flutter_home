@@ -14,7 +14,6 @@ The goal is to learn Flutter/Dart and apply **MVVM + common design patterns** in
 - Detail page per pattern: category, description, and **Open Demo** button
 - Example demos included: **Singleton**, **Factory Method**
 - Modular structure (easy to add more demos)
-- Ready for future **SharedPreferences** and **local DB (SQLite/Hive)** integrations
 
 ---
 
@@ -49,6 +48,3 @@ The goal is to learn Flutter/Dart and apply **MVVM + common design patterns** in
 - Template Method
 - Visitor
 
----
-
-## 🗂 Project Structure
