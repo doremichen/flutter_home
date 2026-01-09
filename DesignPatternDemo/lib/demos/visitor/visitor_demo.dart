@@ -47,7 +47,7 @@ class VisitorDemoView extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Visitor Demo'),
+            title: const Text('訪問者 (Visitor)'),
             actions: [
               // 右上角跳轉至結果清單頁面
               IconButton(
@@ -121,6 +121,7 @@ class VisitorDemoView extends StatelessWidget {
       // 讓 Card 撐滿 Expanded 分配給它的空間
       child: SizedBox.expand(
         child: SingleChildScrollView(
+          primary: false,
           padding: const EdgeInsets.all(12),
           child: Column(
             children: widgets,

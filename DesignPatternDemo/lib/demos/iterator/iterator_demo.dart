@@ -43,7 +43,7 @@ class _IteratorDemoBody extends StatelessWidget{
 
         return Scaffold(
             appBar: AppBar(
-              title: const Text('Iterator Pattern Demo'),
+              title: const Text('迭代器 (Iterator)'),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.tune), // 跳轉設定
@@ -58,7 +58,7 @@ class _IteratorDemoBody extends StatelessWidget{
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Clear logs',
+                  tooltip: '清除記錄',
                   icon: const Icon(Icons.delete),
                   onPressed: vm.clearLogs,
                 ),
@@ -93,11 +93,12 @@ class _IteratorDemoBody extends StatelessWidget{
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        primary: false,
+        padding: const EdgeInsets.all(12),
         child: _InfoBanner(
-          title: '此 Demo 的目的',
+          title: '迭代器 (Iterator)',
           lines: const [
-            '展示 Iterator（疊代器）如何提供一致的遍歷介面。',
+            '展示迭代器如何提供一致的遍歷介面。',
             '支援 Forward / Reverse / Filter / Step 等迭代方式。',
             '可觀察已產出數量與是否到尾端。',
           ],
@@ -114,6 +115,7 @@ class _IteratorDemoBody extends StatelessWidget{
         borderRadius: BorderRadius.circular(12),
       ),
       child: SingleChildScrollView(
+        primary: false,
         padding: const EdgeInsets.all(12),
         child: Padding(
           padding: const EdgeInsets.all(12),

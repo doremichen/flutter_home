@@ -6,15 +6,15 @@
 /// Copyright © 2025 Abb company. All rights reserved
 ///
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'view_model/command_view_model.dart';
 
 class CommandControlPage extends StatefulWidget {
-  final CommandViewModel vm;
-  const CommandControlPage({super.key, required this.vm});
+  const CommandControlPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _CommandControlPageState(vm : vm);
+  State<StatefulWidget> createState() => _CommandControlPageState();
 }
 
 class _CommandControlPageState extends State<CommandControlPage> {
@@ -22,9 +22,6 @@ class _CommandControlPageState extends State<CommandControlPage> {
   late final TextEditingController _amountController ;
   late final TextEditingController _setController;
 
-
-  final CommandViewModel vm;
-  _CommandControlPageState({required this.vm});
 
   @override
   void initState() {
@@ -34,6 +31,7 @@ class _CommandControlPageState extends State<CommandControlPage> {
 
     // add listener
     _amountController.addListener(() {
+      final vm = context.read<CommandViewModel>();
       if (_amountController.text.isNotEmpty) {
         final v = double.tryParse(_amountController.text);
         if (v != null) {
@@ -54,39 +52,35 @@ class _CommandControlPageState extends State<CommandControlPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: vm,
-      builder: (context, _) {
-        return Scaffold(
-          appBar: AppBar(title: const Text('命令模式控制')),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Input amount and init value
-                  _buildInputField(vm),
-                  const SizedBox(height: 12),
+    final vm = context.watch<CommandViewModel>();
 
-                  // Basic commands
-                  _buildBasicCommands(context, vm),
-                  const SizedBox(height: 12),
+    return Scaffold(
+      appBar: AppBar(title: const Text('命令模式控制台')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // Input amount and init value
+              _buildInputField(vm),
+              const SizedBox(height: 12),
 
-                  // Macro commands
-                  _buildMacroCommands(context, vm),
-                  const SizedBox(height: 12),
+              // Basic commands
+              _buildBasicCommands(context, vm),
+              const SizedBox(height: 12),
 
-                  // action button
-                  _buildActionFooter(context),
+              // Macro commands
+              _buildMacroCommands(context, vm),
+              const SizedBox(height: 12),
 
-                ],
-              ),
-            ),
+              // action button
+              _buildActionFooter(context),
+
+            ],
           ),
+        ),
+      ),
 
-        );
-
-      }
     );
 
   }

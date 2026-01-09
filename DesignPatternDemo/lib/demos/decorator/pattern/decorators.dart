@@ -31,7 +31,7 @@ class MilkDecorator extends BeverageDecorator {
   MilkDecorator(super.baseBeverage);
 
   @override
-  String get name => 'Milk';
+  String get name => '牛奶';
 
   @override
   double cost() {
@@ -50,7 +50,7 @@ class MochaDecorator extends BeverageDecorator {
   MochaDecorator(super.baseBeverage);
 
   @override
-  String get name => 'Mocha';
+  String get name => '摩卡';
 
   @override
   double cost() {
@@ -69,7 +69,7 @@ class WhipDecorator extends BeverageDecorator {
   WhipDecorator(super.baseBeverage);
 
   @override
-  String get name => 'Whip';
+  String get name => '鞭子';
 
   @override
   double cost() {
@@ -88,7 +88,7 @@ class SoyDecorator extends BeverageDecorator {
   SoyDecorator(super.baseBeverage);
 
   @override
-  String get name => 'Soy';
+  String get name => '大豆';
 
   @override
   double cost() {
@@ -109,7 +109,7 @@ class SugarDecorator extends BeverageDecorator {
   SugarDecorator(super.baseBeverage);
 
   @override
-  String get name => 'Sugar';
+  String get name => '糖';
 
 
   @override

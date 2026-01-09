@@ -5,6 +5,7 @@
 /// Created by Adam Chen on 2025/12/18
 /// Copyright © 2025 Abb company. All rights reserved
 ///
+import 'package:design_pattern_demo/demos/proxy/util/proxy_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,13 +49,18 @@ class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Proxy 代理模式監控'),
+            title: const Text('代理模式 (Proxy)'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.tune), // 跳轉設定
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => ProxySettingsPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const ProxySettingsPage(),
+                      ),
+                  ),
                 ),
               ),
               IconButton(
@@ -69,7 +75,7 @@ class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
               children: [
                 // info banner
                 _buildInfoBanner(),
-
+                const SizedBox(height: 8,),
                 // summary card
                 _buildProxySummaryCard(vm),
 
@@ -101,11 +107,11 @@ class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
       constraints: const BoxConstraints(maxHeight: 140),
       child: Scrollbar(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.all(8),
           child: _InfoBanner(
-            title: '此 Demo 的目的',
+            title: '代理模式 (Proxy)',
             lines: const [
-              '展示 Proxy（代理）如何在不改變用戶端介面的前提下，加入「延遲載入」、「存取控制」、「快取」、「紀錄」等橫切需求。',
+              '展示代理模式如何在不改變用戶端介面的前提下，加入「延遲載入」、「存取控制」、「快取」、「紀錄」等橫切需求。',
               '選擇不同 Proxy 組合（Virtual/Protection/Caching/Logging/Composite），輸入 Key 後進行一次或批次讀取。',
               '統計卡顯示：總請求、真實服務呼叫次數、快取命中/未命中；清單與 Log 可觀察各代理的實際行為。',
             ],
@@ -117,24 +123,23 @@ class _ProxyDemoBodyState extends State<_ProxyDemoBody> {
 
   Widget _buildProxySummaryCard(ProxyViewModel vm) {
     return Card(
-      margin: const EdgeInsets.all(16),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           children: [
             // title bar
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(child: Text('總請求: ${vm.totalRequests}')),
                 Expanded(child: Text('真實服務: ${vm.serviceCalls}')),
-                Expanded(child: Text('快取命中: ${vm.cacheHits} / misses: ${vm.cacheMisses}')),
+                Expanded(child: Text('快取命中: ${vm.cacheHits} 未命中: ${vm.cacheMisses}')),
               ],
             ),
             const Divider(),
             // summary
-            Text('當前 Proxy: ${vm.selectedKind.name}',
-                style: const TextStyle(fontSize: 12, color: Colors.grey)
+            Text('當前 Proxy: ${ProxyUtil.getProxyName(vm.selectedKind)}',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
@@ -228,7 +233,7 @@ class _InfoBanner extends StatelessWidget {
     return Card(
       color: theme.colorScheme.surfaceContainerLow,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

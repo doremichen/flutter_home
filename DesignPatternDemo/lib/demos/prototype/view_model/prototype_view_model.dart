@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 
 import '../creator/prototype_registry.dart';
 import '../model/product.dart';
-import '../util/color_parser.dart';
 
 class PrototypeViewModel extends ChangeNotifier {
   final PrototypeRegistry _registry;

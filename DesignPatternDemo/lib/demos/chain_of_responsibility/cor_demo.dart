@@ -40,11 +40,10 @@ class _CoRDemoBody extends StatelessWidget {
             }
           });
 
-          final theme = Theme.of(context);
 
           return Scaffold(
             appBar: AppBar(
-              title: const Text('責任鍊展示'),
+              title: const Text('責任鍊 (CoR)'),
               actions: [
                 IconButton(
                   tooltip: '進入設定',
@@ -52,7 +51,12 @@ class _CoRDemoBody extends StatelessWidget {
                   onPressed: () {
                     // 跳轉到設定頁面
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => CoRSettingsPage(vm : vm)),
+                      MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider.value(
+                            value: vm,
+                            child: CoRSettingsPage(),
+                          )
+                      ),
                     );
                   },
                 ),
@@ -71,12 +75,12 @@ class _CoRDemoBody extends StatelessWidget {
                   Expanded(
                     child: _buildInfoBanner(),
                   ),
-                  const Divider(height: 1),
+                  const SizedBox(height: 8),
                   // summary card
                   Expanded(
                     child: _buildCoRSummaryCard(context, vm),
                   ),
-                  const Divider(height: 1),
+                  const SizedBox(height: 8),
                   // system log
                   Expanded(
                     child: _buildBottomLogPanel(context, vm),
@@ -93,11 +97,11 @@ class _CoRDemoBody extends StatelessWidget {
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.all(8),
         child: _InfoBanner(
-          title: '此 Demo 的目的',
+          title: '責任鏈 (CoR)',
           lines: const [
-            '展示 CoR（責任鏈）：請求依序通過多個處理者（Handler），每個節點可選擇「處理並早停」或「傳遞給下一個」。',
+            '展示責任鏈：請求依序通過多個處理者（Handler），每個節點可選擇「處理並早停」或「傳遞給下一個」。',
             '範例鏈：Auth → Spam → Validation → Tier1 → Tier2 → Manager；可動態啟用/停用某些節點並觀察影響。',
             '適用情境：驗證/分流/規則匹配/事件分派/編譯管線等，利於責任分離與擴充。',
           ],

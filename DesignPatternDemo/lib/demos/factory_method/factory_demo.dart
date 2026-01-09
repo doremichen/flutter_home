@@ -50,7 +50,7 @@ class _FactoryDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('工廠方法模式展示'),
+            title: const Text('工廠方法模式 (Factory Method)'),
             actions: [
               IconButton(
                 tooltip: '全部清除',
@@ -81,17 +81,16 @@ class _FactoryDemoBody extends StatelessWidget {
           extendBody: false,
           body: SafeArea(
             child: Padding(
-              // 側邊與頂部留白
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  /// --- 上半部：Demo 目的說明 (保持置頂) ---
+                  // header
                   _buildHeaderSection(),
 
                   const Divider(height: 24, thickness: 1),
 
-                  /// --- 下半部：左按鈕 / 右清單 (並排區) ---
+                  // control buttons & result list
                   Expanded(
                     child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,9 +120,9 @@ class _FactoryDemoBody extends StatelessWidget {
 
   Widget _buildHeaderSection() {
     return _InfoBanner(
-      title: '此 Demo 的目的',
+      title: '工廠方法模式 (Factory Method)',
       lines: const [
-        '示範 Factory Method 如何將建立邏輯封裝在工廠中。',
+        '示範工廠方法如何將建立邏輯封裝在工廠中。',
         '呼叫端透過抽象介面取得具體產品。',
         '下方按鈕可建立不同車款，便於觀察擴充性。',
       ],
@@ -133,7 +132,7 @@ class _FactoryDemoBody extends StatelessWidget {
 
   Widget _buildFactoryButtonList(List factories, dynamic vm) {
     return SizedBox(
-        width: 140, // 根據按鈕文字長度調整寬度
+        width: 140,
         child: SingleChildScrollView(
           child: Column(
             children: factories.map((f) => Padding(

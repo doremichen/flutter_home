@@ -35,8 +35,8 @@ class Amplifier extends SubSystem {
 
   @override
   String status() => _on
-      ? 'Amplifier ON | input=$_input | vol=$_volume'
-      : 'Amplifier is off';
+      ? '喇叭開啟 | 輸入=$_input | 音量=$_volume'
+      : '喇叭已關閉';
 
   // --- get ----
   bool get isOn => _on;
@@ -58,8 +58,8 @@ class Projector extends SubSystem {
 
   @override
   String status() => _on
-      ? 'Projector ON | mode=$_mode'
-      : 'Projector OFF';
+      ? '投影機已開啟 | 模式=$_mode'
+      : '投影機已關閉';
 
   // === getter ===
   bool get isOn => _on;
@@ -85,7 +85,7 @@ class TheaterLights extends SubSystem {
 
 
   @override
-  String status() => _on ? 'Lights ON | level=$_level' : 'Lights OFF';
+  String status() => _on ? '燈已開啟 | level=$_level' : '燈已關閉';
 
   // --- getter ---
   bool get isOn => _on;
@@ -130,10 +130,10 @@ class StreamingPlayer extends SubSystem {
 
   @override
   String status() {
-    if (!_on) return 'Player OFF';
-    final s = _playing ? 'PLAYING' : 'PAUSED';
+    if (!_on) return '撥放器關閉';
+    final s = _playing ? '撥放' : '暫停';
     final t = _title.isEmpty ? EMPTY_TITLE : _title;
-    return 'Player ON | $s | "$t"';
+    return '撥放器開啟 | $s="$t"';
   }
 
   // --- getter ---

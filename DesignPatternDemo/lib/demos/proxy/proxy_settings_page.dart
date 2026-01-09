@@ -7,54 +7,51 @@
 ///
 import 'package:design_pattern_demo/demos/proxy/pattern/proxy_context.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'pattern/proxy_service.dart';
+import 'util/proxy_util.dart';
 import 'view_model/proxy_view_model.dart';
 
 class ProxySettingsPage extends StatelessWidget {
-  final ProxyViewModel vm;
 
-  const ProxySettingsPage({super.key, required this.vm});
+  const ProxySettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: vm,
-      builder: (context, _) {
-        return Scaffold(
-          appBar: AppBar(title: const Text('代理行為設定')),
-          body: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('1. 代理模式組合', style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 12),
-                        _buildProxyKindSelector(vm), // 這裡可以用 Wrap 解決橫向寬度不足
+    final vm = context.watch<ProxyViewModel>();
+    return Scaffold(
+      appBar: AppBar(title: const Text('代理行為設定')),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('1. 代理模式組合', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    _buildProxyKindSelector(vm), // 這裡可以用 Wrap 解決橫向寬度不足
 
-                        const SizedBox(height: 24),
-                        const Text('2. 當前存取角色', style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 12),
-                        _buildRoleSelector(vm),
+                    const SizedBox(height: 24),
+                    const Text('2. 當前存取角色', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    _buildRoleSelector(vm),
 
-                        const SizedBox(height: 24),
-                        const Text('3. 請求資源 Key', style: TextStyle(fontWeight: FontWeight.bold)),
-                        _buildRequestResource(vm),
-                      ],
-                    ),
-                  ),
+                    const SizedBox(height: 24),
+                    const Text('3. 請求資源 Key', style: TextStyle(fontWeight: FontWeight.bold)),
+                    _buildRequestResource(vm),
+                  ],
                 ),
-                // 底部動作
-                _buildActionFooter(context, vm),
-              ],
+              ),
             ),
-          ),
-        );
-      }
+            // 底部動作
+            _buildActionFooter(context, vm),
+          ],
+        ),
+      ),
     );
   }
 
@@ -65,7 +62,7 @@ class ProxySettingsPage extends StatelessWidget {
       children: ProxyKind.values.map((kind) {
         final isSelected = vm.selectedKind == kind;
         return ChoiceChip(
-          label: Text(_getProxyName(kind)),
+          label: Text(ProxyUtil.getProxyName(kind)),
           selected: isSelected,
           selectedColor: Colors.blue.shade100,
           onSelected: (bool selected) {
@@ -88,7 +85,7 @@ class ProxySettingsPage extends StatelessWidget {
             role == AccessRole.admin ? Icons.admin_panel_settings : Icons.person,
             size: 16,
           ),
-          label: Text(role.name.toUpperCase()),
+          label: Text(_getRoleName(role)),
           selected: isSelected,
           onSelected: (bool selected) {
             if (selected) vm.setRole(role);
@@ -147,13 +144,11 @@ class ProxySettingsPage extends StatelessWidget {
     );
   }
 
-  String _getProxyName(ProxyKind kind) {
-    switch (kind) {
-      case ProxyKind.virtualOnly: return '延遲載入 (Virtual)';
-      case ProxyKind.protectionOnly: return '權限控制 (Protection)';
-      case ProxyKind.cachingOnly: return '快取機制 (Caching)';
-      case ProxyKind.loggingAndCaching: return '日誌 + 快取';
-      case ProxyKind.compositeAll: return '綜合代理 (All)';
+  String _getRoleName(AccessRole role) {
+    switch (role) {
+      case AccessRole.guest: return '訪客';
+      case AccessRole.user: return '使用者';
+      case AccessRole.admin: return '管理員';
     }
   }
 

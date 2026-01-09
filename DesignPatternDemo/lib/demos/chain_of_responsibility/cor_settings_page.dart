@@ -12,19 +12,15 @@ import 'model/data.dart';
 import 'view_model/cor_view_model.dart';
 
 class CoRSettingsPage extends StatefulWidget {
-  final CoRViewModel vm;
 
-  CoRSettingsPage({super.key, required this.vm});
+  CoRSettingsPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _CoRSettingsPageState(vm : vm);
+  State<StatefulWidget> createState() => _CoRSettingsPageState();
 
 }
 
 class _CoRSettingsPageState extends State<CoRSettingsPage> {
-   final CoRViewModel vm;
-
-  _CoRSettingsPageState({required this.vm});
 
   late final TextEditingController _msgController;
 
@@ -42,40 +38,37 @@ class _CoRSettingsPageState extends State<CoRSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: vm,
-      builder: (context, _) {
-        return Scaffold(
-          appBar: AppBar(title: const Text('責任鍊展示模式設定')),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          const Text('請求參數設定', style: TextStyle(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 16),
-                          _buildCategorySelector(vm),
-                          const SizedBox(height: 12),
-                          _buildSeveritySelector(vm),
-                          const SizedBox(height: 12),
-                          _buildNodeSwitch(vm),
-                          const SizedBox(height: 24),
-                          _buildActionFooter(context, vm),
-                        ],
-                      ),
-                    ),
+    final vm = Provider.of<CoRViewModel>(context);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('責任鍊展示模式設定')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const Text('請求參數設定', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      _buildCategorySelector(vm),
+                      const SizedBox(height: 12),
+                      _buildSeveritySelector(vm),
+                      const SizedBox(height: 12),
+                      _buildNodeSwitch(vm),
+                      const SizedBox(height: 24),
+                      _buildActionFooter(context, vm),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        );
-      }
+        ),
+      ),
     );
   }
 
@@ -106,9 +99,9 @@ class _CoRSettingsPageState extends State<CoRSettingsPage> {
         const SizedBox(height: 8),
         SegmentedButton<Severity>(
           segments: const [
-            ButtonSegment(value: Severity.low, label: Text('Low')),
-            ButtonSegment(value: Severity.medium, label: Text('Medium')),
-            ButtonSegment(value: Severity.high, label: Text('High')),
+            ButtonSegment(value: Severity.low, label: Text('低')),
+            ButtonSegment(value: Severity.medium, label: Text('中')),
+            ButtonSegment(value: Severity.high, label: Text('高')),
           ],
           selected: {vm.severity},
           onSelectionChanged: (s) => vm.setSeverity(s.first),

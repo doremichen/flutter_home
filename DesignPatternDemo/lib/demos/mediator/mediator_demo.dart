@@ -33,7 +33,7 @@ class _MediatorDemoBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MediatorViewModel>(
       builder: (context, vm, _) {
-        // SnackBar（避免在 build 期間觸發）
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final msg = vm.lastToast;
           if (msg != null) {
@@ -46,7 +46,7 @@ class _MediatorDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Mediator Pattern Demo'),
+            title: const Text('中介者 (Mediator)'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.tune), // 跳轉設定
@@ -61,7 +61,7 @@ class _MediatorDemoBody extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Clear logs',
+                tooltip: '清除紀錄',
                 icon: const Icon(Icons.delete),
                 onPressed: vm.clearLogs,
               ),
@@ -96,11 +96,12 @@ class _MediatorDemoBody extends StatelessWidget {
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
+        primary: false,
         padding: const EdgeInsets.all(16),
         child: _InfoBanner(
-          title: '此 Demo 的目的',
+          title: '中介者 (Mediator)',
           lines: const [
-            '展示 Mediator（仲介者）集中管理元件互動。',
+            '展示中介者集中管理元件互動。',
             '場景與環境事件由仲介者決策並觸發聯動。',
             '降低耦合、集中規則、提升可維護性。',
           ],
@@ -117,6 +118,7 @@ class _MediatorDemoBody extends StatelessWidget {
         side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
       ),
       child: SingleChildScrollView(
+        primary: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -249,6 +251,7 @@ class _MediatorDemoBody extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
+              primary: false,
               reverse: true,
               itemCount: vm.logs.length,
               itemBuilder: (_, i) => Text('> ${vm.logs[vm.logs.length - 1 - i]}',

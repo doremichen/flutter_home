@@ -30,8 +30,8 @@ class FlyweightViewModel extends ChangeNotifier {
     final Random _random = Random();
 
     // UI selection item
-    final List<String> types = const ['Tree', 'Rock', 'House', 'NPC'];
-    final List<String> colors = const ['Green', 'Brown', 'Gray', 'Red', 'Blue'];
+    final List<String> types = const ['樹', '石頭', '房子', '其他'];
+    final List<String> colors = const ['綠色', '棕色', '灰色', '紅色', '藍色'];
 
     int selectedTypeIndex = 0;
     int selectedColorIndex = 0;

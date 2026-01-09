@@ -98,7 +98,7 @@ class DecoratorViewModel extends ChangeNotifier {
       BaseKind.house => 50.0,
       BaseKind.dark => 55.0,
     };
-    items.add(LineItem(label: 'Base: ${_current.describe().split(' + ').first}', price: basePrice));
+    items.add(LineItem(label: '基本: ${_current.describe().split(' + ').first}', price: basePrice));
 
     for (final k in applied) {
       items.add(LineItem(label: '+ ${_label(k)}', price: _price(k)));
@@ -107,9 +107,17 @@ class DecoratorViewModel extends ChangeNotifier {
 
   }
 
-  VoidCallback? get clearLogs => logs.isEmpty ? null : () => logs.clear();
+
   String get description => _current.describe();
   double get totalCost => _current.cost();
+
+  void clearAll() {
+    selectedBase = BaseKind.espresso;
+    _current = Espresso();
+    applied.clear();
+    logs.clear();
+    notifyListeners();
+  }
 
   // --- helper ---
   Beverage _createBeverage(BaseKind kind) {
@@ -144,11 +152,11 @@ class DecoratorViewModel extends ChangeNotifier {
 
   _label(DecoratorKind kind) {
     return switch (kind){
-      DecoratorKind.milk => 'Milk (+10)',
-      DecoratorKind.mocha => 'Mocha (+15)',
-      DecoratorKind.whip => 'Whip (+12)',
-      DecoratorKind.soy => 'Soy (+8)',
-      DecoratorKind.sugar => 'Sugar (+2)',
+      DecoratorKind.milk => '牛奶（+10）',
+      DecoratorKind.mocha => '摩卡（+15）',
+      DecoratorKind.whip => '鞭子（+12）',
+      DecoratorKind.soy => '大豆（+8）',
+      DecoratorKind.sugar => '糖（+2）',
     };
   }
 

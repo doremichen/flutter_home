@@ -46,7 +46,7 @@ class _StrategyDemoBody extends StatelessWidget {
         });
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Strategy Pattern Demo (MVVM)')),
+          appBar: AppBar(title: const Text('策略模式 (Strategy)')),
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -100,6 +100,7 @@ class _StrategyDemoBody extends StatelessWidget {
       // 讓 Card 撐滿 Expanded 分配給它的空間
       child: SizedBox.expand(
         child: SingleChildScrollView(
+          primary: false,
           padding: const EdgeInsets.all(12),
           child: Column(
             children: widgets,

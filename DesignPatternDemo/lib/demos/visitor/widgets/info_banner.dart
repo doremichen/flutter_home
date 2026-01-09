@@ -14,8 +14,8 @@ class InfoBanner extends StatelessWidget {
   const InfoBanner({super.key});
 
   String _label(VisitorType t) => switch (t) {
-    VisitorType.area => 'Area',
-    VisitorType.perimeter => 'Perimeter',
+    VisitorType.area => '面積',
+    VisitorType.perimeter => '周長',
   };
 
   @override
@@ -31,7 +31,7 @@ class InfoBanner extends StatelessWidget {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.info_outline),
-              title: const Text('Visitor Pattern Demo（Shapes）'),
+              title: const Text('訪問者 (Visitor)'),
               subtitle: Text(
                 '目前 Visitor：${_label(vm.visitorType)}（${vm.visitorName}）'
                     '\n圖形數量：${vm.shapes.length}'

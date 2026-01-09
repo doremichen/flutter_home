@@ -23,17 +23,17 @@ class PrototypeRegistry {
 // define default template
 PrototypeRegistry defaultVehicleRegistry() {
   return PrototypeRegistry({
-    'Sport': Vehicle(
+    '跑車': Vehicle(
       model: 'Sport-2000',
       type: 'Sport',
       specs: Specs(color: 'Red', seats: 2, features: ['Turbo', 'Sport ABS']),
     ),
-    'Family': Vehicle(
+    '房車': Vehicle(
       model: 'Family-Comfort',
       type: 'Family',
       specs: Specs(color: 'Blue', seats: 5, features: ['Isofix', 'Eco Mode']),
     ),
-    'Truck': Vehicle(
+    '卡車': Vehicle(
       model: 'Truck-Heavy',
       type: 'Truck',
       specs: Specs(color: 'White', seats: 3, features: ['Lift Assist', 'Tow']),

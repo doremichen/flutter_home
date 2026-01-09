@@ -46,9 +46,8 @@ class _AdapterDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Adapter 模式 Demo'),
+            title: const Text('適配器 (Adapter)'),
             actions: [
-              // 右上角跳轉至結果清單頁面
               IconButton(
                 icon: Badge(
                   label: Text('${vm.results.length}'),
@@ -56,7 +55,12 @@ class _AdapterDemoBody extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => AdapterHistoryPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const AdapterHistoryPage(),
+                      ),
+                  ),
                 ),
               ),
             ],
@@ -129,10 +133,10 @@ class _AdapterDemoBody extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(right: 8),
           child: _InfoBanner(
-            title: '此 Demo 的目的',
+            title: '適配器 (Adapter)',
             lines: const [
-              '展示 Adapter 模式如何將「舊系統/第三方 API（英制）」轉換成「新系統期望的介面與單位（公制）」。',
-              '選擇上方 Adapter（車速 mph→km/h / 溫度 °F→°C），使用按鈕讀取一次或批次讀取。',
+              '展示適配器模式如何將「舊系統/第三方 API（英制）」轉換成「新系統期望的介面與單位（公制）」。',
+              '選擇下方適配器（車速 mph→km/h / 溫度 °F→°C），使用按鈕讀取一次或批次讀取。',
               '右上方可點選歷史清單顯示每次量測的轉換結果與時間戳，便於驗證適配器是否正確工作。',            ],
           ),
         ),
@@ -183,7 +187,7 @@ class _AdapterDemoBody extends StatelessWidget {
   Widget _buildControlPanel(AdapterViewModel vm) {
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text('1. 選擇適配器 (Adapter)', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
           const SizedBox(height: 12),

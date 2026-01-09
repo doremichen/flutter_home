@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Design Patterns Practice'),),
+      appBar: AppBar(title: const Text('設計模式'),),
       body: ListView.separated(
         itemCount: patterns.length,
         separatorBuilder: (_, _) => const Divider(height: 1,),

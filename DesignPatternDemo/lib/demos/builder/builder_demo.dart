@@ -72,16 +72,16 @@ class _BuilderDemoPageState extends State<BuilderDemoPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Builder 模式 Demo')),
+      appBar: AppBar(title: const Text('生成器 (Builder)')),
       body: SafeArea(
         child: Material(
-          color: Colors.transparent, // 確保繼承 Scaffold 的淺灰色背景
+          color: Colors.transparent,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /// --- 1. 頂部：說明區 (可捲動) ---
+                // info banner
                 _buildInfoBanner(),
 
                 const Divider(height: 32, thickness: 1, color: Colors.black12),
@@ -119,10 +119,10 @@ class _BuilderDemoPageState extends State<BuilderDemoPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(right: 8),
           child: _InfoBanner(
-            title: '此 Demo 的目的',
+            title: '生成器 (Builder)',
             lines: const [
-              '以「餐點建造」為例，演示 Builder 模式如何將「建造流程」與「具體建造細節」分離。',
-              '左側切換不同 Builder 並執行建造配方，右側觀察相同的流程如何產生截然不同的成品。',
+              '以「餐點建造」為例，演示生成器模式如何將「建造流程」與「具體建造細節」分離。',
+              '左側切換不同生成器並執行建造配方，右側觀察相同的流程如何產生截然不同的成品。',
             ],
           ),
         ),

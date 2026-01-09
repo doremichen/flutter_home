@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'flyweight_settings_page.dart';
-import 'util/flyweight_util.dart';
 import 'view_model/flyweight_view_model.dart';
 
 
@@ -41,18 +40,20 @@ class _FlyweightDemoBody extends StatelessWidget {
           }
         });
 
-        final theme = Theme.of(context);
-
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Flyweight 享元控制台'),
+            title: const Text('享元模式 (Flyweight)'),
             actions: [
-              // 跳轉至設定與新增頁面
               IconButton(
                 icon: const Icon(Icons.add_box_outlined),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => FlyweightSettingsPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const FlyweightSettingsPage(),
+                      ),
+                  ),
                 ),
               ),
               IconButton(
@@ -99,13 +100,13 @@ class _FlyweightDemoBody extends StatelessWidget {
       constraints: const BoxConstraints(maxHeight: 140),
       child: Scrollbar(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(right: 8),
+          padding: EdgeInsets.symmetric(vertical: 8),
           child: _InfoBanner(
-              title: '此 Demo 的目的',
+              title: '享元模式 (Flyweight)',
               lines: const [
-              '展示 Flyweight（享元）如何將「大型且不變的內在狀態」共享（例如圖像/樣式），僅為每個物件保存「外在狀態」（位置、尺寸），以大幅降低記憶體使用量。',
+              '展示享元模式如何將「大型且不變的內在狀態」共享（例如圖像/樣式），僅為每個物件保存「外在狀態」（位置、尺寸），以大幅降低記憶體使用量。',
               '選擇地圖物件類型與顏色，批次新增（×100/×1000）；開啟「隨機顏色」可增加共享元數量的變化。',
-              '統計卡會比較享元 vs 天真（不共享）模式的記憶體估算與節省比例，並顯示唯一共享 Sprite 數量與物件總數。',
+              '統計卡會比較享元 vs 原生（不共享）模式的記憶體估算與節省比例，並顯示唯一共享 Sprite 數量與物件總數。',
               ]
           ),
         ),
@@ -116,13 +117,10 @@ class _FlyweightDemoBody extends StatelessWidget {
   Widget _buildMemoryStatsCard(FlyweightViewModel vm, BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 4,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -171,7 +169,6 @@ class _FlyweightDemoBody extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -258,21 +255,22 @@ class _FlyweightDemoBody extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, -4),
             blurRadius: 10,
           ),
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. 日誌摘要區域 (固定高度的終端機感日誌)
+          // summary
           if (vm.logs.isNotEmpty) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -316,14 +314,19 @@ class _FlyweightDemoBody extends StatelessWidget {
             const SizedBox(height: 16),
           ],
 
-          // 2. 動作按鈕：導向設定頁面
+          // action button
           SizedBox(
             width: double.infinity,
             height: 50,
             child: FilledButton.icon(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => FlyweightSettingsPage(vm: vm)),
+                MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: vm,
+                      child: const FlyweightSettingsPage(),
+                    ),
+                ),
               ),
               icon: const Icon(Icons.settings_suggest),
               label: const Text('開啟配置面板並新增物件', style: TextStyle(fontWeight: FontWeight.bold)),

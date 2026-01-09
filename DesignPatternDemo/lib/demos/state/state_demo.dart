@@ -47,7 +47,7 @@ class _StateDemoBody extends StatelessWidget {
         });
 
         return Scaffold(
-          appBar: AppBar(title: const Text('State Pattern Demo (MVVM)')),
+          appBar: AppBar(title: const Text('狀態模式 (State)')),
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,6 +101,7 @@ class _StateDemoBody extends StatelessWidget {
       // 讓 Card 撐滿 Expanded 分配給它的空間
       child: SizedBox.expand(
         child: SingleChildScrollView(
+          primary: false,
           padding: const EdgeInsets.all(12),
           child: Column(
             children: widgets,

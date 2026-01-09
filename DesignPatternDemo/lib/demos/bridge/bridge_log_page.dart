@@ -6,18 +6,19 @@
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'view_model/bridge_view_model.dart';
 
 class BridgeLogPage extends StatelessWidget{
-  final BridgeViewModel vm;
-  const BridgeLogPage({super.key, required this.vm});
+  const BridgeLogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<BridgeViewModel>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('轉換歷史紀錄'),
+        title: const Text('橋接紀錄'),
         actions: [
           TextButton(
             onPressed: () {

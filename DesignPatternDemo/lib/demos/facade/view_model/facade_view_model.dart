@@ -17,9 +17,9 @@ class FacadeViewModel extends ChangeNotifier {
   final HomeTheaterFacade facade;
 
   SceneKind selectedScene = SceneKind.movie;
-  String movieTitle = 'Interstellar';
-  String gameTitle = 'Console';
-  String playlistName = 'My Favorites';
+  String movieTitle = '星際效應';
+  String gameTitle = '操控台';
+  String playlistName = '我的最愛';
 
   final List<String> logs = [];
   String? _lastToast;

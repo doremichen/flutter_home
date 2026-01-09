@@ -14,7 +14,7 @@ abstract class Beverage {
 // --- concrete beverage ---
 class Espresso implements Beverage {
   @override
-  String get name => 'Espresso';
+  String get name => '濃縮咖啡';
 
   @override
   double cost() => 60.0;
@@ -25,7 +25,7 @@ class Espresso implements Beverage {
 
 class HouseBlend implements Beverage {
   @override
-  String get name => 'House Blend';
+  String get name => '自家混合';
 
   @override
   double cost() => 50.0;
@@ -36,7 +36,7 @@ class HouseBlend implements Beverage {
 
 class DarkRoast implements Beverage {
   @override
-  String get name => 'Dark Roast';
+  String get name => '深烘焙';
 
   @override
   double cost() => 55.0;

@@ -6,16 +6,17 @@
 /// Copyright © 2025 Abb company. All rights reserved
 ///
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'view_model/facade_view_model.dart';
 
 class FacadeLogPage extends StatelessWidget {
-  final FacadeViewModel vm;
 
-  const FacadeLogPage({super.key, required this.vm});
+  const FacadeLogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<FacadeViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Facade 操作序列'),

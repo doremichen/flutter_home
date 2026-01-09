@@ -32,7 +32,6 @@ class _DecoratorDemoBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<DecoratorViewModel>(
       builder: (context, vm, _) {
-        // SnackBar（避免在 build 期間觸發）
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final msg = vm.takeLastToast();
           if (msg != null) {
@@ -42,13 +41,10 @@ class _DecoratorDemoBody extends StatelessWidget {
           }
         });
 
-        final theme = Theme.of(context);
-
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Decorator 模式 Demo'),
+            title: const Text('裝飾模式 (Decorator)'),
             actions: [
-              // 右上角跳轉至 Log 頁面
               IconButton(
                 icon: Badge(
                   label: Text('${vm.logs.length}'),
@@ -56,7 +52,12 @@ class _DecoratorDemoBody extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => DecoratorLogPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const DecoratorLogPage(),
+                      ),
+                  ),
                 ),
               ),
             ],
@@ -67,18 +68,16 @@ class _DecoratorDemoBody extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // --- 1. 固定頂部 (固定高度區域) ---
+                  // info banner
                   _buildInfoBanner(),
                   const SizedBox(height: 16),
                   _buildCoffeePreview(vm),
 
                   const Divider(height: 32, thickness: 1, color: Colors.black12),
 
-                  // --- 2. 中間滾動區 (自動伸縮區域) ---
-                  // Expanded 會強制讓這個部分佔據剩餘的所有空間
+                  // Control region
                   Expanded(
                     child: SingleChildScrollView(
-                      // 這裡放原本的控制面板內容
                       child: _buildControlPanel(vm),
                     ),
                   ),
@@ -104,11 +103,12 @@ class _DecoratorDemoBody extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(right: 8),
           child: _InfoBanner(
-              title: '此 Demo 的目的',
+              title: '裝飾模式 (Decorator)',
               lines: const [
-                '展示 Decorator（裝飾者）如何以「包裝」方式，動態為物件添加功能與屬性，而不需改動原類別。',
-                '左側選擇基底飲品（Espresso/House/Dark），右側按鈕可逐一套用裝飾（Milk/Mocha/...）。',
-                '下方狀態卡與明細列會即時顯示目前的組成與總價，支援撤銷最後一個裝飾與清空所有裝飾。',              ]
+                '展示裝飾模式如何以「包裝」方式，動態為物件添加功能與屬性，而不需改動原類別。',
+                '1.選擇基底飲品（Espresso/House/Dark），2. 添加裝飾（Milk/Mocha/...），3. 訂單管理（撤銷/清空）。',
+                '下方狀態卡與明細列會即時顯示目前的組成與總價，支援撤銷最後一個裝飾與清空所有裝飾。',
+              ]
           ),
         ),
       ),
@@ -166,9 +166,9 @@ class _DecoratorDemoBody extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _baseChip(vm, 'Espresso', BaseKind.espresso),
-            _baseChip(vm, 'House Blend', BaseKind.house),
-            _baseChip(vm, 'Dark Roast', BaseKind.dark),
+            _baseChip(vm, '濃縮咖啡', BaseKind.espresso),
+            _baseChip(vm, '自家混合', BaseKind.house),
+            _baseChip(vm, '深烘焙', BaseKind.dark),
           ],
         ),
         const SizedBox(height: 24),
@@ -176,17 +176,17 @@ class _DecoratorDemoBody extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
         const SizedBox(height: 12),
         _buildButtonPair(
-          left: _decoBtn(vm, 'Add Milk (+10)', DecoratorKind.milk),
-          right: _decoBtn(vm, 'Add Mocha (+15)', DecoratorKind.mocha),
+          left: _decoBtn(vm, '加牛奶（+10）', DecoratorKind.milk),
+          right: _decoBtn(vm, '加摩卡（+15）', DecoratorKind.mocha),
         ),
         const SizedBox(height: 8),
         _buildButtonPair(
-          left: _decoBtn(vm, 'Add Whip (+12)', DecoratorKind.whip),
-          right: _decoBtn(vm, 'Add Soy (+8)', DecoratorKind.soy),
+          left: _decoBtn(vm, '增加鞭子（+12）', DecoratorKind.whip),
+          right: _decoBtn(vm, '加豆奶（+8）', DecoratorKind.soy),
         ),
         const SizedBox(height: 8),
         _buildButtonPair(
-          left: _decoBtn(vm, 'Add Sugar (+2)', DecoratorKind.sugar),
+          left: _decoBtn(vm, '加糖（+2）', DecoratorKind.sugar),
           right: const SizedBox.shrink(),
         ),
         // 這裡可以放更多未來會增加的裝飾項目...

@@ -17,7 +17,7 @@ class IteratorControlPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('迭代模式控制台'),
+        title: const Text('迭代器控制台'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -95,7 +95,7 @@ class IteratorControlPage extends StatelessWidget {
               child: FilledButton.icon(
                 onPressed: () => _execute(vm.nextOne),
                 icon: const Icon(Icons.skip_next),
-                label: const Text('Next'),
+                label: const Text('下一個'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12), // 增加點擊高度
                 ),
@@ -121,7 +121,7 @@ class IteratorControlPage extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => _execute(vm.shufflePlaylist),
                 icon: const Icon(Icons.shuffle, size: 18),
-                label: const Text('Shuffle'),
+                label: const Text('洗牌'),
               ),
             ),
             const SizedBox(width: 8),
@@ -129,7 +129,7 @@ class IteratorControlPage extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => _execute(vm.addSampleSong),
                 icon: const Icon(Icons.library_add, size: 18),
-                label: const Text('Add Song'),
+                label: const Text('新增歌曲'),
               ),
             ),
           ],

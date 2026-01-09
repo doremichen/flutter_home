@@ -34,7 +34,7 @@ class InfoBanner extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.info_outline),
-                title: const Text('Template Method Demo'),
+                title: const Text('模板方法 (Template Method)'),
                 subtitle: Text(
                   '目前模板：${_label(vm.selectedType)}（${vm.templateName}）'
                       '\n輸入長度：${vm.input.length}'

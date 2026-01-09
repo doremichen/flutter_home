@@ -36,28 +36,6 @@ class _FacadeDemoBody extends StatefulWidget {
 }
 
 class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
-  // input controller
-  late final _movieController;
-  late final _gameController ;
-  late final _playlistController;
-
-  @override
-  void initState() {
-    super.initState();
-    final vm = context.read<FacadeViewModel>();
-    _movieController = TextEditingController(text: vm.movieTitle);
-    _gameController = TextEditingController(text: vm.gameTitle);
-    _playlistController = TextEditingController(text: vm.playlistName);
-  }
-
-  @override
-  void dispose() {
-    // dispose
-    _movieController.dispose();
-    _gameController.dispose();
-    _playlistController.dispose();
-    super.dispose();
-  }
 
 
   @override
@@ -72,26 +50,25 @@ class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
               SnackBar(content: Text(msg), duration: const Duration(seconds: 2)),
             );
           }
-          // text control value
-          if (mounted) {
-            _movieController.text = vm.movieTitle;
-            _gameController.text = vm.gameTitle;
-            _playlistController.text = vm.playlistName;
-          }
         });
 
         final theme = Theme.of(context);
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Facade 模式 Demo'),
+            title: const Text('外觀模式 (Facade)'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.settings),
                 tooltip: '配置場景參數',
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => FacadeSettingsPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const FacadeSettingsPage(),
+                      ),
+                  ),
                 ),
               ),
               IconButton(
@@ -101,7 +78,12 @@ class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
                 ),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => FacadeLogPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const FacadeLogPage(),
+                      ),
+                  ),
                 ),
               ),
             ],
@@ -126,13 +108,14 @@ class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
                     ),
                   ),
 
-                  // 分隔線，明確區分顯示區與操作區
                   const Divider(height: 1),
-                  const Text('2. 子系統當前配置', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  _buildSubsystemInfo(Icons.speaker, '功放揚聲器', '音量與環繞聲隨場景自動調整'),
-                  _buildSubsystemInfo(Icons.videocam, '投影設備', '解析度與長寬比由 Facade 控管'),
-                  _buildSubsystemInfo(Icons.lightbulb, '智能燈光', '亮度依據目前模式自動調暗/調亮'),
+
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: _buildSubSystemConfig(vm),
+                  ),
+
+
                   // 固定底部：Facade 統一操作按鈕
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -339,7 +322,12 @@ class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
     return InkWell(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => FacadeSettingsPage(vm: vm)),
+        MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider.value(
+              value: vm,
+              child: const FacadeSettingsPage(),
+            ),
+        ),
       ),
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -365,6 +353,19 @@ class _FacadeDemoBodyState extends State<_FacadeDemoBody> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSubSystemConfig(FacadeViewModel vm) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text('子系統當前配置', style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        _buildSubsystemInfo(Icons.speaker, '喇叭揚聲器', '音量與環繞聲隨場景自動調整'),
+        _buildSubsystemInfo(Icons.videocam, '投影設備', '解析度與長寬比由 Facade 控管'),
+        _buildSubsystemInfo(Icons.lightbulb, '智能燈光', '亮度依據目前模式自動調暗/調亮'),
+      ],
     );
   }
 

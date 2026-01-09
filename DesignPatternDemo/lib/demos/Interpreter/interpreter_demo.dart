@@ -53,7 +53,7 @@ class _InterpreterDemoBody extends StatelessWidget {
         return Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
-              title: const Text('Interpreter Pattern Demo'),
+              title: const Text('解譯器 (Interpreter)'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.tune), // 跳轉設定
@@ -79,11 +79,11 @@ class _InterpreterDemoBody extends StatelessWidget {
               children: [
                 // 1. 目的介紹 (Banner)
                 Expanded(flex: 1, child: _buildInfoBanner()),
-                const Divider(height: 1),
+                const SizedBox(height: 8),
 
                 // 2. 執行結果 (Result)
                 Expanded(flex: 1, child: _buildResultCard(context, vm, isError)),
-                const Divider(height: 1),
+                const SizedBox(height: 8),
 
                 // 3. 詳盡數據 (Tokens / AST / Logs)
                 Expanded(
@@ -126,6 +126,7 @@ class _InterpreterDemoBody extends StatelessWidget {
           Expanded(
             child: Scrollbar(
               child: ListView.builder(
+                primary: false,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 itemCount: vm.tokens.length,
                 itemBuilder: (context, index) {
@@ -153,6 +154,7 @@ class _InterpreterDemoBody extends StatelessWidget {
           Expanded(
             child: Scrollbar(
               child: SingleChildScrollView(
+                primary: false,
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   vm.ast.isEmpty ? '等待解析...' : vm.ast,
@@ -179,6 +181,7 @@ class _InterpreterDemoBody extends StatelessWidget {
           Expanded(
             child: Scrollbar(
               child: ListView.builder(
+                primary: false,
                 padding: const EdgeInsets.all(8),
                 itemCount: vm.logs.length,
                 itemBuilder: (context, index) {
@@ -197,11 +200,12 @@ class _InterpreterDemoBody extends StatelessWidget {
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
+        primary: false,
         padding: const EdgeInsets.all(16),
         child: _InfoBanner(
-          title: '此 Demo 的目的',
+          title: '解譯器 (Interpreter)',
           lines: const [
-            '展示 Interpreter（直譯器）如何以 Tokenizer + Parser + AST + eval 建構並執行一個小型 DSL。',
+            '展示解譯器如何以 Tokenizer + Parser + AST + eval 建構並執行一個小型 DSL。',
             'DSL 支援變數指派與基本運算/函式（max/min/abs），以分號分隔多個語句。',
             '如下顯示執行結果、Environment、Tokens、AST 與 Logs。',
           ],
@@ -216,6 +220,7 @@ class _InterpreterDemoBody extends StatelessWidget {
       child: Scrollbar(
         thumbVisibility: true, // 讓捲軸常駐，提醒使用者可以滾動
         child: SingleChildScrollView(
+          primary: false,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

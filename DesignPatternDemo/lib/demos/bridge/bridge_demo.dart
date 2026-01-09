@@ -46,9 +46,8 @@ class _BridgeDemoBody extends StatelessWidget {
 
           return Scaffold(
               appBar: AppBar(
-                title: const Text('Bridge Pattern Demo'),
+                title: const Text('橋接模式 (Bridge)'),
                 actions: [
-                  // 右上角跳轉至結果清單頁面
                   IconButton(
                     icon: Badge(
                       label: Text('${vm.logs.length}'),
@@ -56,7 +55,12 @@ class _BridgeDemoBody extends StatelessWidget {
                     ),
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => BridgeLogPage(vm: vm)),
+                      MaterialPageRoute(
+                          builder: (_) => ChangeNotifierProvider.value(
+                            value: vm,
+                            child: const BridgeLogPage(),
+                          ),
+                      ),
                     ),
                   ),
                 ],
@@ -100,9 +104,9 @@ class _BridgeDemoBody extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(right: 8),
           child: _InfoBanner(
-            title: '此 Demo 的目的',
+            title: '橋接模式 (Bridget)',
             lines: const [
-            '展示 bridge 模式：將「抽象（遙控器）」與「實作（裝置）」分離並以組合相連，使兩者可獨立演進。',
+            '展示橋接模式：將「抽象（遙控器）」與「實作（裝置）」分離並以組合相連，使兩者可獨立演進。',
             '選擇裝置（TV/Radio/SmartLight），選擇遙控器（Basic/Advanced）。操作按鈕會透過 bridge 呼叫裝置行為。',
             '觀察狀態卡與Log：更換遙控器不需改動裝置；新增裝置不需改動遙控器，達到低耦合可擴充的設計。',
             ]
@@ -164,7 +168,7 @@ class _BridgeDemoBody extends StatelessWidget {
   Widget _buildBridgeControlPanel(BridgeViewModel vm) {
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // title
           const Text('1. 配置橋接組合', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
@@ -190,8 +194,8 @@ class _BridgeDemoBody extends StatelessWidget {
           const SizedBox(height: 8),
           SegmentedButton<RemoteKind>(
             segments: const [
-              ButtonSegment(value: RemoteKind.basic, label: Text('Basic'), icon: Icon(Icons.settings_input_component)),
-              ButtonSegment(value: RemoteKind.advanced, label: Text('Advanced'), icon: Icon(Icons.auto_awesome)),
+              ButtonSegment(value: RemoteKind.basic, label: Text('基本'), icon: Icon(Icons.settings_input_component)),
+              ButtonSegment(value: RemoteKind.advanced, label: Text('進階'), icon: Icon(Icons.auto_awesome)),
             ],
             selected: {vm.selectedRemote},
             onSelectionChanged: (s) => vm.selectRemote(s.first),
@@ -218,6 +222,7 @@ class _BridgeDemoBody extends StatelessWidget {
   Widget _buildActionButtonGroup(BridgeViewModel vm) {
     return SingleChildScrollView(
       child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 24),
             const Text('2. 遙控器操作', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),

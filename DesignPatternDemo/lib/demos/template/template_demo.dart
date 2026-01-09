@@ -50,7 +50,7 @@ class _TemplateDemo extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('模板方法模式演示'),
+            title: const Text('模板方法 (Template Method)'),
             actions: [
               // 右上角跳轉至結果清單頁面
               IconButton(
@@ -123,6 +123,7 @@ class _TemplateDemo extends StatelessWidget {
       // 讓 Card 撐滿 Expanded 分配給它的空間
       child: SizedBox.expand(
         child: SingleChildScrollView(
+          primary: false,
           padding: const EdgeInsets.all(12),
           child: Column(
             children: widgets,

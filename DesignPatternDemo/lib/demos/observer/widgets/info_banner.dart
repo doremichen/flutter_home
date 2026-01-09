@@ -36,7 +36,7 @@ class InfoBanner extends StatelessWidget {
               children: [
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Observer Pattern Demo'),
+                  title: const Text('觀察者 (Observer)'),
                   subtitle: Text('目前 Adapter：${_adapterName(vm.selected)}'),
                   leading: const Icon(Icons.info_outline),
                 ),

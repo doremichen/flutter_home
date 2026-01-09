@@ -5,12 +5,13 @@
 /// Created by Adam Chen on 2026/01/02
 /// Copyright © 2025 Abb company. All rights reserved
 ///
+import 'package:provider/provider.dart';
+
 import 'view_model/facade_view_model.dart';
 import 'package:flutter/material.dart';
 
 class FacadeSettingsPage extends StatefulWidget {
-  final FacadeViewModel vm;
-  const FacadeSettingsPage({super.key, required this.vm});
+  const FacadeSettingsPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _FacadeSettingsPageState();
@@ -24,9 +25,11 @@ class _FacadeSettingsPageState extends State<FacadeSettingsPage> {
   @override
   void initState() {
     super.initState();
-    _movieController = TextEditingController(text: widget.vm.movieTitle);
-    _gameController = TextEditingController(text: widget.vm.gameTitle);
-    _playlistController = TextEditingController(text: widget.vm.playlistName);
+    final vm = context.read<FacadeViewModel>();
+
+    _movieController = TextEditingController(text: vm.movieTitle);
+    _gameController = TextEditingController(text: vm.gameTitle);
+    _playlistController = TextEditingController(text: vm.playlistName);
   }
 
   @override
@@ -40,43 +43,38 @@ class _FacadeSettingsPageState extends State<FacadeSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: widget.vm,
-      builder: (context, _) {
-        // sync controller
-        _syncController(_movieController, widget.vm.movieTitle);
-        _syncController(_gameController, widget.vm.gameTitle);
-        _syncController(_playlistController, widget.vm.playlistName);
+    final vm = context.watch<FacadeViewModel>();
 
-        return Scaffold(
-            appBar: AppBar(title: const Text('配置場景參數')),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('選擇場景模式', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  _buildSceneSelector(widget.vm),
-                  const SizedBox(height: 24),
-                  const Text('詳細參數設定', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  _buildSettingTiles(widget.vm),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('完成配置並返回'),
-                    ),
-                  ),
-                ],
+    // sync controller
+    _syncController(_movieController, vm.movieTitle);
+    _syncController(_gameController, vm.gameTitle);
+    _syncController(_playlistController, vm.playlistName);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('配置場景參數')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('選擇場景模式', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            _buildSceneSelector(vm),
+            const SizedBox(height: 24),
+            const Text('詳細參數設定', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            _buildSettingTiles(vm),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('完成配置並返回'),
               ),
             ),
-        );
-
-
-      },
+          ],
+        ),
+      ),
     );
   }
 
@@ -89,14 +87,14 @@ class _FacadeSettingsPageState extends State<FacadeSettingsPage> {
   Widget _buildSceneSelector(FacadeViewModel vm) {
     return Column(
       children: [
-        const Text('1. 場景配置', style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text('場景配置', style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Center(
           child: SegmentedButton<SceneKind>(
             segments: const [
-              ButtonSegment(value: SceneKind.movie, label: Text('Movie'), icon: Icon(Icons.movie)),
-              ButtonSegment(value: SceneKind.game, label: Text('Game'), icon: Icon(Icons.videogame_asset)),
-              ButtonSegment(value: SceneKind.music, label: Text('Music'), icon: Icon(Icons.music_note)),
+              ButtonSegment(value: SceneKind.movie, label: Text('電影'), icon: Icon(Icons.movie)),
+              ButtonSegment(value: SceneKind.game, label: Text('遊戲'), icon: Icon(Icons.videogame_asset)),
+              ButtonSegment(value: SceneKind.music, label: Text('音樂'), icon: Icon(Icons.music_note)),
             ],
             selected: {vm.selectedScene},
             onSelectionChanged: (s) => vm.selectScene(s.first),

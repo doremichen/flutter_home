@@ -88,7 +88,7 @@ class _SingletonDemoPageState extends State<SingletonDemoPage> {
     Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Singleton Demo')),
+      appBar: AppBar(title: const Text('單例模式 (Singleton)')),
       extendBody: false,
       body: SafeArea(
         // bottom: true 確保避開手機底部的導覽列
@@ -97,7 +97,7 @@ class _SingletonDemoPageState extends State<SingletonDemoPage> {
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /// --- 上半部：標題與按鈕 (保持原樣) ---
+                // Header
                 SingleChildScrollView(
                   child: _buildHeader(hash),
                 ),
@@ -135,9 +135,9 @@ class _SingletonDemoPageState extends State<SingletonDemoPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        /// --- Demo 目的說明卡片 ---
+        // info banner
         _InfoBanner(
-          title: 'Singleton 模式展示',
+          title: '單例模式展示',
           lines: const [
             '確保全域僅有一個實例，共享應用狀態。',
             '下方 hashCode 若相同，代表為同一個物件。',

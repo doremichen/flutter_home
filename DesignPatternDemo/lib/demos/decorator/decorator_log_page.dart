@@ -6,23 +6,24 @@
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'view_model/decorator_view_model.dart';
 
 class DecoratorLogPage extends StatelessWidget {
-  final DecoratorViewModel vm;
 
-  const DecoratorLogPage({super.key, required this.vm});
+  const DecoratorLogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<DecoratorViewModel>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('訂單明細與日誌'),
+        title: const Text('價格和日誌'),
         actions: [
           TextButton(
             onPressed: () {
-              vm.clearLogs;
+              vm.clearAll();
               Navigator.pop(context);
             },
             child: const Text('全部清空', style: TextStyle(color: Colors.red)),
@@ -35,7 +36,6 @@ class DecoratorLogPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- 1. 上半部：價格拆解 ---
               const Text('價格拆解 (Breakdown):', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Expanded(
@@ -45,7 +45,6 @@ class DecoratorLogPage extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // --- 2. 下半部：操作紀錄 ---
               const Text('操作紀錄 (Logs):', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Expanded(
@@ -63,7 +62,6 @@ class DecoratorLogPage extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: ListView.separated(
-        // ListView 在 Expanded 中會自動填滿空間並啟用滾動
         padding: const EdgeInsets.all(12),
         itemCount: vm.breakdown.length,
         separatorBuilder: (_, __) => const Divider(height: 12),

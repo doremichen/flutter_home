@@ -27,7 +27,7 @@ class InfoBanner extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.info_outline),
-                title: const Text('State Pattern Demo'),
+                title: const Text('狀態模式 (State)'),
                 subtitle: Text(
                   '目前 State Engine：${switch (vm.selectedType) {
                     EngineType.classic => 'Classic State',

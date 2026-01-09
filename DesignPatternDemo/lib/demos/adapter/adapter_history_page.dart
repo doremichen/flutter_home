@@ -6,15 +6,17 @@
 /// Copyright © 2025 Abb company. All rights reserved.
 ///
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'view_model/adapter_view_model.dart';
 
 class AdapterHistoryPage extends StatelessWidget {
-  final AdapterViewModel vm;
-  const AdapterHistoryPage({super.key, required this.vm});
+
+  const AdapterHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<AdapterViewModel>();
     return Scaffold(
         appBar: AppBar(
             title: const Text('適配器歷史紀錄'),

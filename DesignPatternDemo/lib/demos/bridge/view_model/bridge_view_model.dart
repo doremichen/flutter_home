@@ -20,7 +20,7 @@ class BridgeViewModel extends ChangeNotifier {
         () => SmartLightDevice(),
   ];
 
-  final List<String> deviceLabels = ['TV', 'Radio', 'SmartLight'];
+  final List<String> deviceLabels = ['電視', '收音機', '智慧燈'];
 
   int selectedDeviceIndex = 0;
   RemoteKind selectedRemote = RemoteKind.basic;

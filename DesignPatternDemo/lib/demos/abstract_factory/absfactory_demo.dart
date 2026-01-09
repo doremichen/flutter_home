@@ -36,7 +36,7 @@ class _AbstractFactoryDemoBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AbstractFactoryViewModel>(
       builder: (context, vm, _) {
-        // Snackbar Toast（避免在 build 中直接觸發）
+        // toast
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final msg = vm.takeLastToast();
           if (msg != null) {
@@ -49,9 +49,9 @@ class _AbstractFactoryDemoBody extends StatelessWidget {
         Theme.of(context);
 
         return Scaffold(
-          backgroundColor: Colors.grey.shade50, // 全局淺色背景
+          backgroundColor: Colors.grey.shade50,
           appBar: AppBar(
-            title: const Text('Abstract Factory Demo'),
+            title: const Text('抽象工廠 (Abstract Factory)'),
             elevation: 0,
             backgroundColor: Colors.white,
             foregroundColor: Colors.black87,
@@ -90,7 +90,7 @@ class _AbstractFactoryDemoBody extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // 上半部：可捲動的說明 Banner
+                    //Header
                     _buildHeaderSection(),
 
                     const Divider(height: 32, thickness: 1, color: Colors.black12),
@@ -122,15 +122,15 @@ class _AbstractFactoryDemoBody extends StatelessWidget {
 
   Widget _buildHeaderSection() {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: 140), // 給定一個固定或比例高度
+      constraints: BoxConstraints(maxHeight: 140),
       child: Scrollbar(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(right: 8), // 留點空間給滾動條
+          padding: const EdgeInsets.only(right: 8),
           child: _InfoBanner(
-            title: '此 Demo 的目的',
+            title: '抽象工廠 (Abstract Factory)',
             lines: const [
-              '展示 Abstract Factory 如何產生「一組相互匹配的產品族」，以維持風格與相容性的一致。',
-              '左方的 ChoiceChip 用來選擇不同零件工廠（跑車/家庭/卡車），建立時會一次產生同系列的零件組合。',
+              '展示抽象工廠如何產生「一組相互匹配的產品族」，以維持風格與相容性的一致。',
+              '左方的選擇按鈕用來選擇不同零件工廠（跑車/家庭/卡車），建立時會一次產生同系列的零件組合。',
               '右方清單列出已建立的零件套件，便於比較不同工廠的輸出差異與擴充性。',
             ],
           ),

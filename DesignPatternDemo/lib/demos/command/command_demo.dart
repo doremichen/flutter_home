@@ -70,7 +70,7 @@ class _CommandDemoBodyState extends State<_CommandDemoBody> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('命令模式展示'),
+            title: const Text('命令模式 (Command)'),
             actions: [
               IconButton(
                 tooltip: '進入控制台',
@@ -78,7 +78,12 @@ class _CommandDemoBodyState extends State<_CommandDemoBody> {
                 onPressed: () {
                   // 跳轉到設定頁面
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CommandControlPage(vm : vm)),
+                    MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider.value(
+                          value: vm,
+                          child: const CommandControlPage(),
+                        )
+                    ),
                   );
                 },
               ),
@@ -97,19 +102,19 @@ class _CommandDemoBodyState extends State<_CommandDemoBody> {
                 Expanded(
                   child: _buildInfoBanner(),
                 ),
-                const Divider(height: 1),
+                const SizedBox(height: 8),
 
                 // Status card
                 Expanded(
                   child: _buildCommandSummaryCard(context, vm),
                 ),
-                const Divider(height: 1),
+                const SizedBox(height: 8),
 
                 // History
                 Expanded(
                   child: _buildCommandHistory(context, vm),
                 ),
-                const Divider(height: 1),
+                const Divider(height: 8),
 
                 // system log
                 Expanded(
@@ -133,10 +138,10 @@ class _CommandDemoBodyState extends State<_CommandDemoBody> {
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: _InfoBanner(
-          title: '此 Demo 的目的',
+          title: '命令模式 (Command)',
           lines: const [
-            '展示 Command（命令）如何將「操作」封裝成物件，支援排程、紀錄、Undo/Redo 與宏命令。',
-            '輸入數值後，透過加/減/乘/除等命令更新 Calculator；可執行 Undo/Redo 回復狀態。',
+            '展示命令模式如何將「操作」封裝成物件，支援排程、紀錄、撤銷/重作 與宏命令。',
+            '輸入數值後，透過加/減/乘/除等命令更新計算；可執行撤銷/重作回復狀態。',
             '宏命令將多個命令視為一個，執行時依序呼叫，撤銷時反向回滾。',          ],
         ),
       ),

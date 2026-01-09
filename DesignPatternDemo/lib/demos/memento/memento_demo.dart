@@ -92,7 +92,7 @@ class _MementoDemoBodyState extends State<_MementoDemoBody> {
         _textController.value = _textController.value.copyWith(text: vm.stagedText);
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Memento Pattern Demo'),
+            title: const Text('備忘錄 (Memento)'),
             actions: [
               // 右上角跳轉至結果清單頁面
               IconButton(
@@ -119,12 +119,15 @@ class _MementoDemoBodyState extends State<_MementoDemoBody> {
                 children: [
                   // info banner
                   Expanded(
+                    flex: 1,
                     child: _buildInfoBanner(),
                   ),
-
+                  const SizedBox(height: 12,),
                   // main (control and status)
                   Expanded(
+                    flex: 3,
                     child: SingleChildScrollView(
+                      primary: false,
                       child: Column(
                         children: [
                           const SizedBox(height: 8),
@@ -137,7 +140,7 @@ class _MementoDemoBodyState extends State<_MementoDemoBody> {
                       ),
                     ),
                   ),
-
+                  const SizedBox(height: 12,),
                   // system log
                   _buildSystemLog(vm),
 
@@ -154,11 +157,12 @@ class _MementoDemoBodyState extends State<_MementoDemoBody> {
     return Scrollbar(
       thumbVisibility: true,
       child: SingleChildScrollView(
+        primary: false,
         padding: const EdgeInsets.all(16),
         child: _InfoBanner(
-          title: '此 Demo 的目的',
+          title: '備忘錄 (Memento)',
           lines: const [
-            '展示 Memento（備忘錄）如何將物件狀態封裝成不可變快照（Memento），由 Caretaker 維護，以支援 Undo/Redo 與歷史回溯。',
+            '展示備忘錄如何將物件狀態封裝成不可變快照（Memento），由 Caretaker 維護，以支援 Undo/Redo 與歷史回溯。',
             'Originator：TextDocument（content + caret）。Caretaker：HistoryManager（維護快照堆疊）。',
             '每次操作都能建立 checkpoint；Undo/Redo 以快照為準恢復狀態，避免暴露內部細節（封裝原則）。',
           ],
@@ -436,7 +440,7 @@ class _MementoDemoBodyState extends State<_MementoDemoBody> {
                 // 清空按鈕
                 GestureDetector(
                   onTap: () => vm.clearLogs(),
-                  child: Text('CLEAR', style: theme.textTheme.labelSmall?.copyWith(color: theme.primaryColor)),
+                  child: Text('清除', style: theme.textTheme.labelSmall?.copyWith(color: theme.primaryColor)),
                 ),
               ],
             ),
@@ -445,7 +449,9 @@ class _MementoDemoBodyState extends State<_MementoDemoBody> {
 
           // 日誌內容區
           Expanded(
+            flex: 2,
             child: ListView.builder(
+              primary: false,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               itemCount: vm.logs.length,
               // 建議在 ViewModel 中讓最新的日誌排在最後面，並搭配自動捲動

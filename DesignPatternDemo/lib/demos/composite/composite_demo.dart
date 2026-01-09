@@ -61,13 +61,10 @@ class _CompositeDemoBodyState  extends State<_CompositeDemoBody> {
           }
         });
 
-        final theme = Theme.of(context);
-
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Composite 模式 Demo'),
+            title: const Text('組合模式 (Composite)'),
             actions: [
-              // 右上角跳轉至 Log 紀錄頁面
               IconButton(
                 icon: Badge(
                   label: Text('${vm.logs.length}'),
@@ -75,7 +72,12 @@ class _CompositeDemoBodyState  extends State<_CompositeDemoBody> {
                 ),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => CompositeLogPage(vm: vm)),
+                  MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider.value(
+                        value: vm,
+                        child: const CompositeLogPage(),
+                      ),
+                  ),
                 ),
               ),
             ],
@@ -139,9 +141,9 @@ class _CompositeDemoBodyState  extends State<_CompositeDemoBody> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(right: 8),
           child: _InfoBanner(
-              title: '此 Demo 的目的',
+              title: '組合模式 (Composite)',
               lines: const [
-                '展示 Composite 模式：以樹狀結構統一處理「檔案（Leaf）」與「資料夾（Composite）」。',
+                '展示組合模式：以樹狀結構統一處理「檔案（Leaf）」與「資料夾（Composite）」。',
                 '選取任一節點後，可新增檔案/資料夾、重新命名、移除；資料夾節點的大小為其所有子節點大小總和。',
                 '樹狀清單提供展開/收合，示範對整體與部分以同一介面操作的好處（可擴充、低耦合）。',
               ]

@@ -33,7 +33,7 @@ class InfoBanner extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.info_outline),
-                title: const Text('Strategy Pattern Demo'),
+                title: const Text('策略模式 (Strategy)'),
                 subtitle: Text(
                   '目前策略：${_strategyLabel(vm.selectedType)}'
                       '\n輸入長度：${vm.input.length}'

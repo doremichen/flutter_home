@@ -49,7 +49,7 @@ class _ObserverDemoBody extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('觀察模式展示'),
+            title: const Text('觀察者 (Observer)'),
           ),
           body: SafeArea(
             child: Column(
@@ -104,6 +104,7 @@ class _ObserverDemoBody extends StatelessWidget {
       // 讓 Card 撐滿 Expanded 分配給它的空間
       child: SizedBox.expand(
         child: SingleChildScrollView(
+          primary: false,
           padding: const EdgeInsets.all(12),
           child: Column(
             children: widgets,
