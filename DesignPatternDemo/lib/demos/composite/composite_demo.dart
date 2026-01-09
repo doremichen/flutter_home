@@ -99,7 +99,7 @@ class _CompositeDemoBodyState  extends State<_CompositeDemoBody> {
                   ConstrainedBox(
                     constraints: BoxConstraints(
                       // 給予一個足夠的最小高度，確保 TreeView 在沒鍵盤時看起來很完整
-                      minHeight: 300,
+                      minHeight: 100,
                       // 也可以使用 MediaQuery 動態計算高度，避免在大螢幕顯得太短
                       maxHeight: MediaQuery.of(context).size.height * 0.4,
                     ),
